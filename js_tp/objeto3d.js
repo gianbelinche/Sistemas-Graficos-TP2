@@ -9,7 +9,7 @@ class Objeto3D {
         this.matriz_modelado = mat4.create();
         this.hijos = [];
         this.posicion = [0.0,0.0,0.0];
-        this.texture = null;
+        this.texture_amount = 0;
         this.texture_array = [];
         this.texture_names = [];
         this.textureBuffer = null;
@@ -23,15 +23,23 @@ class Objeto3D {
     }
     initTexture(texture_file,tex_name){
                 
-        this.texture = gl.createTexture();
+        /*this.texture = gl.createTexture();
         this.texture.image = new Image();
 
         this.texture.image.onload = function () {
                onTextureLoaded()
         }
-        this.texture.image.src = texture_file;
-        this.texture_array.push(this.texture);
+        this.texture.image.src = texture_file;*/
+        var t = gl.createTexture();
+        t.image = new Image();
+
+        t.image.onload = function () {
+               onTextureLoaded(t);
+        }
+        t.image.src = texture_file;
+        this.texture_array.push(t);
         this.texture_names.push(tex_name);
+        this.texture_amount+=1;
     }
 
     set_texture_buffer(buffer){
@@ -90,10 +98,10 @@ class Objeto3D {
             gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
             gl.vertexAttribPointer(this.Program.textureCoordAttribute, this.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
             for (var i = 0; i < this.texture_array.length;i++){
-                gl.activeTexture(gl.TEXTURE0);
+                gl.activeTexture(gl.TEXTURE0 + i);
                 gl.bindTexture(gl.TEXTURE_2D, this.texture_array[i]);
                 var texture_name = gl.getUniformLocation(this.Program, this.texture_names[i]);
-                gl.uniform1i(texture_name, 0);
+                gl.uniform1i(texture_name, i);
             }
         }
 

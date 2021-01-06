@@ -16,6 +16,7 @@
         uniform float time;                 // tiempo en segundos
         
         uniform sampler2D uSampler;         // sampler de textura de la tierra
+        uniform sampler2D pastoTex;
 
         // variables varying (comunican valores entre el vertex-shader y el fragment-shader)
         // Es importante remarcar que no hay una relacion 1 a 1 entre un programa de vertices y uno de fragmentos

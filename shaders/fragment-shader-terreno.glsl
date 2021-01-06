@@ -16,16 +16,19 @@
         uniform bool uUseLighting;          // usar iluminacion si/no
 
         uniform sampler2D uSampler;
+        uniform sampler2D pastoTex;
 
         void main(void) {
-            vec4 textureColor = texture2D(uSampler, vec2(vUv.s, vUv.t));
+            vec4 pasto=texture2D(pastoTex, vUv * 3.33);
+            vec4 textureColor = texture2D(pastoTex, vec2(vUv.s, vUv.t));
             vec3 lightDirection= normalize(uLightPosition - vec3(vWorldPosition));
             vec3 lightDirection2= normalize(uLightPosition2 - vec3(vWorldPosition));
             
             vec3 color=uAmbientColor;
+            color+=pasto.xyz;
             color+=uDirectionalColor*max(dot(vNormal,lightDirection), 0.0);
             color+=uDirectionalColor2*max(dot(vNormal,lightDirection2), 0.0);
-            
+            //color += pasto.xyz;
            
             if (uUseLighting)
                 gl_FragColor = vec4(color,1.0);

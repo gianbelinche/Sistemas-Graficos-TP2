@@ -77,7 +77,6 @@ function setupModelo(){
     camara_orbital.agregarAHijo(helicoptero);
     helicoptero.set_program(glProgram_helicoptero);
     terreno = crear_terreno(latitud,longitud,lado);
-    terreno.initTexture("img/tibet.png");
     terreno.set_program(glProgram_terreno);
 }
             
