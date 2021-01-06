@@ -404,6 +404,7 @@ function crear_terreno(latitudeBands,longitudeBands,lado){
     webgl_index_buffer.numItems = index_buffer.length;
     var terreno = new Objeto3D(webgl_position_buffer,webgl_index_buffer,webgl_normal_buffer);
     terreno.set_texture_buffer(webgl_texture_coord_buffer);
+    terreno.initTexture("img/tibet.png","uSampler");
     return terreno;
 }
 /*

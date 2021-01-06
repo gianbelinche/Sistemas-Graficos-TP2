@@ -10,6 +10,8 @@ class Objeto3D {
         this.hijos = [];
         this.posicion = [0.0,0.0,0.0];
         this.texture = null;
+        this.texture_array = [];
+        this.texture_names = [];
         this.textureBuffer = null;
         this.Program = null;
     }
@@ -19,7 +21,7 @@ class Objeto3D {
     set_color(color){
         this.color = color;
     }
-    initTexture(texture_file){
+    initTexture(texture_file,tex_name){
                 
         this.texture = gl.createTexture();
         this.texture.image = new Image();
@@ -28,6 +30,8 @@ class Objeto3D {
                onTextureLoaded()
         }
         this.texture.image.src = texture_file;
+        this.texture_array.push(this.texture);
+        this.texture_names.push(tex_name);
     }
 
     set_texture_buffer(buffer){
@@ -83,13 +87,14 @@ class Objeto3D {
         }
 
         if (this.textureBuffer){
-            
             gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
             gl.vertexAttribPointer(this.Program.textureCoordAttribute, this.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, this.texture);
-            gl.uniform1i(this.Program.samplerUniform, 0);
+            for (var i = 0; i < this.texture_array.length;i++){
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, this.texture_array[i]);
+                var texture_name = gl.getUniformLocation(this.Program, this.texture_names[i]);
+                gl.uniform1i(texture_name, 0);
+            }
         }
 
         if (this.vertexBuffer && this.indexBuffer && this.normalBuffer){
