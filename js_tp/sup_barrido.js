@@ -1,0 +1,114 @@
+import {gl,mat4} from "./main.js";
+var vec3 = glMatrix.vec3;
+
+/*
+Creacion de una superfice utilizando superficies de barrido
+Se plantea definiendo para las posiciones como simplemete la posicion de la forma por la matriz de recorrido
+Y para las normales se utiliza la resta entre dos puntos consecutivos rotada luego 90º para que quede orientado de manera saliente a la superficie, luego se multiplica por la matriz de recorrido(normal)
+Finalmente se crea la malla con el algoritmo pensado para gl_TRIANGLES
+*/
+function generarSuperficie(forma,recorrido){
+    var copia_forma = forma;
+    
+    var positionBuffer = [];
+    var normalBuffer = [];
+    var uvBuffer = [];
+    var columnas = copia_forma.length - 1;
+    var filas = recorrido[0].length - 1;
+
+    for (var j=0; j <= filas; j++) {
+        for (var i=0; i <= columnas; i++) {
+
+            var vector = vec3.create();
+            var matriz = mat4.create();
+            var elem = copia_forma[i];
+            mat4.translate(matriz,matriz,[elem[0],elem[1],0.0]);
+            var matriz_pos = recorrido[0][j];
+            var matriz_norm = recorrido[1][j];
+            vec3.transformMat4(vector,vector,matriz);
+            var pos = vec3.create();
+            vec3.transformMat4(pos,vector,matriz_pos);
+
+            positionBuffer.push(pos[0]);
+            positionBuffer.push(pos[1]);
+            positionBuffer.push(pos[2]);
+
+            var nrm= vec3.create();
+            var sig = i + 1;
+            if (i == columnas){
+                sig = 1;
+            }
+            var elem_sig = copia_forma[sig];
+            var normal = [elem_sig[0] - elem[0],elem_sig[1] - elem[1],0.0];
+            var modulo = Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1]);
+            normal = [normal[0] / modulo,normal[1] / modulo,0.0];
+            var m = mat4.create();
+            mat4.rotate(m,m,Math.PI / 2.0,[0.0,0.0,1.0]);
+            vec3.transformMat4(nrm,normal,m);
+            vec3.transformMat4(nrm,nrm,matriz_norm);
+
+            normalBuffer.push(nrm[0]);
+            normalBuffer.push(nrm[1]);
+            normalBuffer.push(nrm[2]);
+
+            
+
+            uvBuffer.push(elem[0]);
+            uvBuffer.push(elem[1]);
+
+        }
+    }
+    
+
+    // Buffer de indices de los triángulos
+    var indexBuffer = []
+    
+   for (i=0; i < filas; i++) {
+        for (j=0; j < columnas; j++) {
+            indexBuffer.push(i * (columnas + 1) + j);
+            indexBuffer.push((i+1) * (columnas + 1) + j);    
+            indexBuffer.push(i * (columnas + 1) + j + 1);
+
+            indexBuffer.push(i * (columnas + 1) + j + 1);
+            indexBuffer.push((i+1) * (columnas + 1) + j); 
+            indexBuffer.push((i+1) * (columnas + 1) + j + 1);
+            
+            }      
+        }
+
+    // Creación e Inicialización de los buffers
+
+    var webgl_position_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, webgl_position_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positionBuffer), gl.STATIC_DRAW);
+    webgl_position_buffer.itemSize = 3;
+    webgl_position_buffer.numItems = positionBuffer.length / 3;
+
+    var webgl_normal_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, webgl_normal_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalBuffer), gl.STATIC_DRAW);
+    webgl_normal_buffer.itemSize = 3;
+    webgl_normal_buffer.numItems = normalBuffer.length / 3;
+
+    var webgl_uvs_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, webgl_uvs_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvBuffer), gl.STATIC_DRAW);
+    webgl_uvs_buffer.itemSize = 2;
+    webgl_uvs_buffer.numItems = uvBuffer.length / 2;
+
+
+    var webgl_index_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webgl_index_buffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexBuffer), gl.STATIC_DRAW);
+    webgl_index_buffer.itemSize = 1;
+    webgl_index_buffer.numItems = indexBuffer.length;
+
+    return {
+        webgl_position_buffer,
+        webgl_normal_buffer,
+        webgl_uvs_buffer,
+        webgl_index_buffer
+    }
+}
+
+export {generarSuperficie};
