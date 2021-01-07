@@ -29,6 +29,44 @@ uniform float h2;
 uniform float h3;
 uniform float h4;
 
+//Value noise
+
+float N21(vec2 p) {
+    return fract(sin(p.x*100.+p.y*6574.)*5647.);
+}
+
+float SmoothNoise(vec2 uv) {
+    vec2 lv = fract(uv);
+    vec2 id = floor(uv);
+    
+    lv = lv*lv*(3.-2.*lv);
+    
+    float bl = N21(id);
+    float br = N21(id+vec2(1,0));
+    float b = mix(bl, br, lv.x);
+    
+    float tl = N21(id+vec2(0,1));
+    float tr = N21(id+vec2(1,1));
+    float t = mix(tl, tr, lv.x);
+    
+    return mix(b, t, lv.y);
+}
+
+float SmoothNoise2(vec2 uv) {
+    float c = SmoothNoise(uv*4.);
+    
+    // don't make octaves exactly twice as small
+    // this way the pattern will look more random and repeat less
+    c += SmoothNoise(uv*8.2)*.5;
+    c += SmoothNoise(uv*16.7)*.25;
+    c += SmoothNoise(uv*32.4)*.125;
+    c += SmoothNoise(uv*64.5)*.0625;
+    
+    c /= 2.;
+    
+    return c;
+}
+
 // Perlin Noise						
                     
 vec3 mod289(vec3 x)
@@ -137,23 +175,69 @@ void main(void) {
     vec3 arena3=texture2D(arenaTex,vUv*2.11).xyz;
     vec3 arena = mix(mix(arena1,arena2,0.5),arena3,0.3);
 
+    vec3 tierra1=texture2D(tierraTex,vUv*4.0).xyz;
+    vec3 tierra2=texture2D(tierraTex,vUv*2.77).xyz;
+    vec3 tierra3=texture2D(tierraTex,vUv*2.11).xyz;
+    vec3 tierra = mix(mix(tierra1,tierra2,0.5),tierra3,0.3);
+
+    vec3 roca1=texture2D(rocaTex,vUv*4.0).xyz;
+    vec3 roca2=texture2D(rocaTex,vUv*2.77).xyz;
+    vec3 roca3=texture2D(rocaTex,vUv*2.11).xyz;
+    vec3 roca = mix(mix(roca1,roca2,0.5),roca3,0.3);
+
+    vec3 musgo1=texture2D(musgoTex,vUv*4.0).xyz;
+    vec3 musgo2=texture2D(musgoTex,vUv*2.77).xyz;
+    vec3 musgo3=texture2D(musgoTex,vUv*2.11).xyz;
+    vec3 musgo = mix(mix(musgo1,musgo2,0.5),musgo3,0.3);
+
     float noise1=cnoise(vUv.xyx*8.23+23.11);
     float noise2=cnoise(vUv.xyx*11.77+9.45);
     float noise3=cnoise(vUv.xyx*14.8+21.2);
     float noise4=cnoise(vUv.xyx*23.6+31.38);
+
+    float value_noise = SmoothNoise2(vUv.xy);
     
 
     float mask_zona_baja=mix(mix(noise1,noise2,0.8),mix(noise3,noise4,0.85),0.6);	
-    mask_zona_baja = mix(mask_zona_baja,1.0,0.3);		
+    mask_zona_baja = mix(mask_zona_baja,1.0,value_noise);		
     mask_zona_baja=smoothstep(-0.1,0.2,mask_zona_baja);
     vec3 zona_baja = mix(pasto,arena,mask_zona_baja);
 
+
+    float mask_zona_media = mix(mix(noise1,noise2,0.1),mix(noise3,noise4,0.66),0.8);	
+    mask_zona_media = mix(mask_zona_media,1.0,0.1);	
+    mask_zona_media=smoothstep(-0.1,0.2,mask_zona_media);
+    vec3 zona_media = mix(pasto,tierra,mask_zona_media);
+
+    float mask_zona_media_roca = mix(mix(noise1,noise2,0.7),mix(noise3,noise4,0.6),0.4);
+    mask_zona_media_roca = mix(mask_zona_media_roca,0.0,0.6);	
+    mask_zona_media_roca=smoothstep(-0.1,0.2,mask_zona_media_roca);
+    zona_media = mix(zona_media,roca,mask_zona_media_roca);
+
+    vec3 zona_alta_pasto = mix(pasto,tierra,value_noise);
+
+    float mask_zona_alta= mix(mix(noise1,noise2,0.8),mix(noise3,noise4,0.8),0.8);
+    mask_zona_alta = mix(mask_zona_alta,1.0,0.2);	
+    mask_zona_alta=smoothstep(-0.1,0.2,mask_zona_alta);
+    vec3 zona_alta = mix(zona_alta_pasto,roca,mask_zona_alta);
+
+    float mask_zona_alta_musgo = mix(mix(noise1,noise2,0.53),mix(noise3,noise4,0.65),0.45);
+    mask_zona_alta_musgo = mix(mask_zona_alta_musgo,1.0,0.13);	
+    mask_zona_alta_musgo=smoothstep(-0.1,0.2,mask_zona_alta_musgo);
+    zona_alta = mix(zona_alta,musgo,mask_zona_alta_musgo);
+
+    float limite_zonas = min(1.0,smoothstep(0.3,0.5,vWorldPosition.y/10.0));
+    vec3 zona_baja_media = mix(zona_baja,zona_media,limite_zonas);
+
+    float limite_zonas_altas = min(1.0,smoothstep(0.8,1.0,vWorldPosition.y/10.0));
+    vec3 zona_media_alta = mix(zona_baja_media,zona_alta,limite_zonas_altas);
+    
     vec3 lightDirection= normalize(uLightPosition - vec3(vWorldPosition));
     vec3 lightDirection2= normalize(uLightPosition2 - vec3(vWorldPosition));
     
     vec3 color=uAmbientColor;
-    color+=zona_baja.xyz;
-    //color += mix(vec3(0.0,0.0,0.0),vec3(1.0,1.0,1.0),mask_zona_baja);
+    color+=zona_media_alta;
+    //color += mix(vec3(0.0,0.0,0.0),vec3(1.0,1.0,1.0),value_noise);
     color+=uDirectionalColor*max(dot(vNormal,lightDirection), 0.0);
     color+=uDirectionalColor2*max(dot(vNormal,lightDirection2), 0.0);
     //color += pasto.xyz;
