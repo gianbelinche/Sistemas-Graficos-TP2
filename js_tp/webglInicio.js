@@ -143,7 +143,7 @@ function initShaders() {
     glProgram_terreno.traslacionTextura = gl.getUniformLocation(glProgram_terreno, "traslacionTextura");
     glProgram_terreno.samplerUniform = gl.getUniformLocation(glProgram_terreno, "uSampler");
     glProgram_terreno.useLightingUniform = gl.getUniformLocation(glProgram_terreno, "uUseLighting");
-    glProgram_terreno.ambientColorUniform = gl.getUniformLocation(glProgram_terreno, "uAmbientColor");
+    glProgram_terreno.uColor = gl.getUniformLocation(glProgram_terreno, "uAmbientColor");
     glProgram_terreno.frameUniform = gl.getUniformLocation(glProgram_terreno, "time");
     glProgram_terreno.lightingDirectionUniform = gl.getUniformLocation(glProgram_terreno, "uLightPosition");
     glProgram_terreno.directionalColorUniform = gl.getUniformLocation(glProgram_terreno, "uDirectionalColor");
@@ -232,13 +232,13 @@ function setupVertexShaderMatrix(){
     gl.uniformMatrix4fv(projMatrixUniform, false, projMatrix);
 
     gl.uniform1f(glProgram_terreno.frameUniform, time/10.0 );
-    gl.uniform3f(glProgram_terreno.ambientColorUniform, 0.15, 0.15, 0.15 );
-    gl.uniform3f(glProgram_terreno.directionalColorUniform, 0.5, 0.9, 0.5);
-    gl.uniform3f(glProgram_terreno.directionalColorUniform2, 0.5, 0.9, 0.8);
+    gl.uniform3f(glProgram_terreno.ambientColorUniform, 0.0, 0.0, 0.0 );
+    gl.uniform3f(glProgram_terreno.directionalColorUniform, 1.0, 1.0, 0.5);
+    gl.uniform3f(glProgram_terreno.directionalColorUniform2, 0.2, 0.2, 0.2);
     gl.uniform1i(glProgram_terreno.useLightingUniform,true);
 
-    var lightPosition = [10.0,10.0, 10.0];  
-    var lightPosition2 = [-5.0,5.0, -10.0];  
+    var lightPosition = [0.0,100.0, 1000.0]; 
+    var lightPosition2 = [0.0,-100.0, 0.0];  
     gl.uniform3fv(glProgram_terreno.lightingDirectionUniform, lightPosition);            
     gl.uniform3fv(glProgram_terreno.lightingDirectionUniform2, lightPosition2);
     

@@ -230,22 +230,16 @@ void main(void) {
     vec3 zona_baja_media = mix(zona_baja,zona_media,limite_zonas);
 
     float limite_zonas_altas = min(1.0,smoothstep(0.8,1.0,vWorldPosition.y/10.0));
-    vec3 zona_media_alta = mix(zona_baja_media,zona_alta,limite_zonas_altas);
+    vec3 zona = mix(zona_baja_media,zona_alta,limite_zonas_altas);
     
     vec3 lightDirection= normalize(uLightPosition - vec3(vWorldPosition));
     vec3 lightDirection2= normalize(uLightPosition2 - vec3(vWorldPosition));
     
     vec3 color=uAmbientColor;
-    color+=zona_media_alta;
-    //color += mix(vec3(0.0,0.0,0.0),vec3(1.0,1.0,1.0),value_noise);
+    color+=zona;
     color+=uDirectionalColor*max(dot(vNormal,lightDirection), 0.0);
     color+=uDirectionalColor2*max(dot(vNormal,lightDirection2), 0.0);
-    //color += pasto.xyz;
-    
-    if (uUseLighting)
-        gl_FragColor = vec4(color,1.0);
-        //gl_FragColor = vec4(vNormal,1.0);
-    else
-        gl_FragColor = vec4(0.7,0.7,0.7,1.0);
+    gl_FragColor = vec4(color,1.0);
+
     
 }
