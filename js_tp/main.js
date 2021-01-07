@@ -15,12 +15,16 @@ sound.play();
 var Sonido = "Activado";
 var modo = "smooth";
 var zoom = 1.0;
-function crear_parametros(modo,sonido,zoom){
+function crear_parametros(modo,sonido,zoom,h1,h2,h3,h4){
     this.modo = modo;
     this.Sonido = sonido;
     this.zoom = zoom;
+    this.h1 = h1;
+    this.h2 = h2;
+    this.h3 = h3;
+    this.h4 = h4;
 }
-var datos = new crear_parametros(modo,Sonido,zoom);
+var datos = new crear_parametros(modo,Sonido,zoom,0.5,0.3,0.0,0.0);
 var mat4=glMatrix.mat4;
 var vec3=glMatrix.vec3;
 var mat3=glMatrix.mat3;
@@ -61,6 +65,10 @@ function initMenu(){
     gui.add(datos,"modo",["wireframe","smooth"]);
     gui.add(datos,"Sonido",["Activado","Desactivado"]);
     gui.add(datos,"zoom",0.2,4.0,0.1);
+    gui.add(datos,"h1",0,1,0.01);
+    gui.add(datos,"h2",0,1,0.01);
+    gui.add(datos,"h3",0,1,0.01);
+    gui.add(datos,"h4",0,1,0.01);
 }
 function setupModelo(){
     camara_orbital = new CamaraFP("orbital");

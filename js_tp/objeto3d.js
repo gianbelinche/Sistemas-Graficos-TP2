@@ -95,6 +95,16 @@ class Objeto3D {
         }
 
         if (this.textureBuffer){
+
+            var h1_pos = gl.getUniformLocation(this.Program, "h1");
+            gl.uniform1f(h1_pos,datos.h1);
+            var h2_pos = gl.getUniformLocation(this.Program, "h2");
+            gl.uniform1f(h2_pos,datos.h2);
+            var h3_pos = gl.getUniformLocation(this.Program, "h3");
+            gl.uniform1f(h3_pos,datos.h3);
+            var h4_pos = gl.getUniformLocation(this.Program, "h4");
+            gl.uniform1f(h4_pos,datos.h4);
+
             gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
             gl.vertexAttribPointer(this.Program.textureCoordAttribute, this.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
             for (var i = 0; i < this.texture_array.length;i++){

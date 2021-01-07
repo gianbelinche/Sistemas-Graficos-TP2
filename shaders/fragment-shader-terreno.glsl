@@ -23,6 +23,12 @@ uniform sampler2D musgoTex;
 uniform sampler2D arenaTex;
 uniform sampler2D rocaTex;
 
+
+uniform float h1;
+uniform float h2;
+uniform float h3;
+uniform float h4;
+
 // Perlin Noise						
                     
 vec3 mod289(vec3 x)
@@ -134,16 +140,20 @@ void main(void) {
     float noise1=cnoise(vUv.xyx*8.23+23.11);
     float noise2=cnoise(vUv.xyx*11.77+9.45);
     float noise3=cnoise(vUv.xyx*14.8+21.2);
+    float noise4=cnoise(vUv.xyx*23.6+31.38);
     
-    float mask_zona_baja=mix(mix(noise1,noise2,0.5),noise3,0.3);		
+
+    float mask_zona_baja=mix(mix(noise1,noise2,0.8),mix(noise3,noise4,0.85),0.6);	
+    mask_zona_baja = mix(mask_zona_baja,1.0,0.3);		
     mask_zona_baja=smoothstep(-0.1,0.2,mask_zona_baja);
-    vec3 zona_baja = mix(arena,pasto,mask_zona_baja);
+    vec3 zona_baja = mix(pasto,arena,mask_zona_baja);
 
     vec3 lightDirection= normalize(uLightPosition - vec3(vWorldPosition));
     vec3 lightDirection2= normalize(uLightPosition2 - vec3(vWorldPosition));
     
     vec3 color=uAmbientColor;
     color+=zona_baja.xyz;
+    //color += mix(vec3(0.0,0.0,0.0),vec3(1.0,1.0,1.0),mask_zona_baja);
     color+=uDirectionalColor*max(dot(vNormal,lightDirection), 0.0);
     color+=uDirectionalColor2*max(dot(vNormal,lightDirection2), 0.0);
     //color += pasto.xyz;
