@@ -406,6 +406,11 @@ function crear_terreno(latitudeBands,longitudeBands,lado){
     terreno.set_texture_buffer(webgl_texture_coord_buffer);
     terreno.initTexture("img/tibet.png","uSampler");
     terreno.initTexture("texturas/pasto.jpg","pastoTex");
+    terreno.initTexture("texturas/arena.jpg","arenaTex");
+    terreno.initTexture("texturas/grava.jpg","gravaTex");
+    terreno.initTexture("texturas/musgo.jpg","musgoTex");
+    terreno.initTexture("texturas/roca.jpg","rocaTex");
+    terreno.initTexture("texturas/tierra.jpg","tierraTex");
     return terreno;
 }
 /*
