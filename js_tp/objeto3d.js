@@ -14,6 +14,12 @@ class Objeto3D {
         this.texture_names = [];
         this.textureBuffer = null;
         this.Program = null;
+        this.uniformBool = [];
+    }
+
+    agregarUniformBool(nombre,valor){
+        this.uniformBool.push(nombre);
+        this.uniformBool.push(valor);
     }
     /*
     Inicia la textura del objeto
@@ -105,6 +111,11 @@ class Objeto3D {
             var h4_pos = gl.getUniformLocation(this.Program, "h4");
             gl.uniform1f(h4_pos,datos.h4);
 
+            if (this.uniformBool.length > 1){
+                var name = gl.getUniformLocation(this.Program, this.uniformBool[0]);
+                gl.uniform1i(name, this.uniformBool[1]);
+            }
+
             gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
             gl.vertexAttribPointer(this.Program.textureCoordAttribute, this.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
             for (var i = 0; i < this.texture_array.length;i++){
@@ -127,16 +138,8 @@ class Objeto3D {
     
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    
-            if (datos.modo!="wireframe"){
-                gl.uniform1i(this.Program.useLightingUniform,true);                    
-                gl.drawElements(gl.TRIANGLES, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-            }
-            
-            if (datos.modo!="smooth") {
-                gl.uniform1i(this.Program.useLightingUniform,false);
-                gl.drawElements(gl.LINE_STRIP, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-            }
+                
+            gl.drawElements(gl.TRIANGLES, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
         }
         for (var i = 0;i < this.hijos.length; i++){
             this.hijos[i].dibujar(m);

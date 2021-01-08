@@ -182,6 +182,9 @@ function initShaders() {
     gl.enableVertexAttribArray(glProgram_helicoptero.vertexNormalAttribute);         
     
     glProgram_helicoptero.uColor = gl.getUniformLocation(glProgram_helicoptero, "uColor");
+
+    glProgram_helicoptero.lightingDirectionUniform = gl.getUniformLocation(glProgram_helicoptero, "uLightPosition");
+    glProgram_helicoptero.directionalColorUniform = gl.getUniformLocation(glProgram_helicoptero, "uDirectionalColor");
 }
 /*
 Compila los shaders
@@ -233,12 +236,12 @@ function setupVertexShaderMatrix(){
 
     gl.uniform1f(glProgram_terreno.frameUniform, time/10.0 );
     gl.uniform3f(glProgram_terreno.ambientColorUniform, 0.0, 0.0, 0.0 );
-    gl.uniform3f(glProgram_terreno.directionalColorUniform, 1.0, 1.0, 0.5);
+    gl.uniform3f(glProgram_terreno.directionalColorUniform, 1.0, 1.0, 0.8);
     gl.uniform3f(glProgram_terreno.directionalColorUniform2, 0.2, 0.2, 0.2);
     gl.uniform1i(glProgram_terreno.useLightingUniform,true);
 
-    var lightPosition = [0.0,100.0, 1000.0]; 
-    var lightPosition2 = [0.0,-100.0, 0.0];  
+    var lightPosition = [0.0,300.0, -10000.0]; 
+    var lightPosition2 = [0.0,300.0, 0.0];  
     gl.uniform3fv(glProgram_terreno.lightingDirectionUniform, lightPosition);            
     gl.uniform3fv(glProgram_terreno.lightingDirectionUniform2, lightPosition2);
     
@@ -260,6 +263,9 @@ function setupVertexShaderMatrix2(){
     gl.uniformMatrix4fv(viewMatrixUniform, false, viewMatrix);
     gl.uniformMatrix4fv(projMatrixUniform, false, projMatrix);
     gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
+    gl.uniform3f(glProgram_helicoptero.directionalColorUniform, 1.0, 1.0, 0.8);
+    var lightPosition = [0.0,300.0, -10000.0]; 
+    gl.uniform3fv(glProgram_helicoptero.lightingDirectionUniform, lightPosition);    
 }
 
 export {loadShaders,initShaders,setupVertexShaderMatrix,setupVertexShaderMatrix2,setupWebGL,glProgram_terreno,glProgram_helicoptero,onTextureLoaded};

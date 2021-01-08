@@ -1,7 +1,7 @@
 import {curvas_bezier} from "./curvas_bezier.js";
 import {generarSuperficie} from "./sup_barrido.js";
 import {Objeto3D} from "./objeto3d.js";
-import {mat4,gl} from "./main.js";
+import {mat4,gl, terreno} from "./main.js";
 /*
 A continuacion se definiran los modelos de cada objeto utilizando superficies de barrido y/o curvas de bezier
 */
@@ -334,10 +334,8 @@ function crear_rotor(){
     rotor.agregarHijo(cilindro_grande);
     return rotor;
 }
-/*
-Creacion del terreno (sin utilizar superficies de barrido)
-*/
-function crear_terreno(latitudeBands,longitudeBands,lado){
+
+function crear_plano(latitudeBands,longitudeBands,lado){
     var normal_buffer = [];
     var position_buffer = [];
     var texture_coord_buffer = [];
@@ -402,8 +400,15 @@ function crear_terreno(latitudeBands,longitudeBands,lado){
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(index_buffer), gl.STATIC_DRAW);
     webgl_index_buffer.itemSize = 1;
     webgl_index_buffer.numItems = index_buffer.length;
-    var terreno = new Objeto3D(webgl_position_buffer,webgl_index_buffer,webgl_normal_buffer);
-    terreno.set_texture_buffer(webgl_texture_coord_buffer);
+    var obj = new Objeto3D(webgl_position_buffer,webgl_index_buffer,webgl_normal_buffer);
+    obj.set_texture_buffer(webgl_texture_coord_buffer);
+    return obj;
+}
+/*
+Creacion del terreno (sin utilizar superficies de barrido)
+*/
+function crear_terreno(latitudeBands,longitudeBands,lado){
+    var terreno = crear_plano(latitudeBands,longitudeBands,lado);
     terreno.initTexture("img/tibet.png","uSampler");
     terreno.initTexture("texturas/pasto.jpg","pastoTex");
     terreno.initTexture("texturas/arena.jpg","arenaTex");
@@ -411,7 +416,18 @@ function crear_terreno(latitudeBands,longitudeBands,lado){
     terreno.initTexture("texturas/musgo.jpg","musgoTex");
     terreno.initTexture("texturas/roca.jpg","rocaTex");
     terreno.initTexture("texturas/tierra.jpg","tierraTex");
+    terreno.agregarUniformBool("isWater",false);
+    var agua = crear_agua(latitudeBands,longitudeBands,lado);
+    terreno.agregarHijo(agua);
+    agua.mover([0.0,3.25,0.0]);
     return terreno;
+}
+
+function crear_agua(latitudeBands,longitudeBands,lado){
+    var agua = crear_plano(latitudeBands,longitudeBands,lado);
+    agua.initTexture("texturas/agua.jpg","aguaTex");
+    agua.agregarUniformBool("isWater",true);
+    return agua;
 }
 /*
 Creacion del terreno con superficies de barrido, por ahora no es funcional, si este comentario sigue en la entrega es porque me olvide de sacarlo
