@@ -53,10 +53,42 @@ function generarSuperficie(forma,recorrido){
 
             
 
-            uvBuffer.push(elem[0]);
-            uvBuffer.push(elem[1]);
+            //uvBuffer.push(pos[1]);
+            //uvBuffer.push(pos[0]);
 
         }
+    }
+    var max_x = positionBuffer[0];
+    var max_y = positionBuffer[1];
+    var max_z = positionBuffer[2];
+
+    var min_x = positionBuffer[0];
+    var min_y = positionBuffer[1];
+    var min_z = positionBuffer[2];
+    for (var i = 3; i < positionBuffer.length;i+=3){
+        if (positionBuffer[i] > max_x){
+            max_x = positionBuffer[i];
+        }
+        if (positionBuffer[i+1] > max_y){
+            max_y = positionBuffer[i+1];
+        }
+        if (positionBuffer[i+2] > max_z){
+            max_z = positionBuffer[i+2];
+        }
+        if (positionBuffer[i] < min_x){
+            min_x = positionBuffer[i];
+        }
+        if (positionBuffer[i+1] < min_y){
+            min_y = positionBuffer[i+1];
+        }
+        if (positionBuffer[i+2] < min_z){
+            min_z = positionBuffer[i+2];
+        }
+    }
+    
+    for (var i = 0; i < positionBuffer.length;i+=3){
+        uvBuffer.push((positionBuffer[i+1] - max_y )/ (-max_y+min_y));
+        uvBuffer.push((positionBuffer[i] - max_x) / (-max_x+min_x));
     }
     
 

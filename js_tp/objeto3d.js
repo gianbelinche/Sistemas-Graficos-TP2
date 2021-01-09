@@ -106,6 +106,10 @@ class Objeto3D {
             var name = gl.getUniformLocation(this.Program, "viewDir");
             gl.uniform3f(name,this.pos_camara[0],this.pos_camara[1],this.pos_camara[2]);
         }
+        if (this.uniformBool.length > 1){
+            var name = gl.getUniformLocation(this.Program, this.uniformBool[0]);
+            gl.uniform1i(name, this.uniformBool[1]);
+        }
 
         if (this.textureBuffer){
 
@@ -118,10 +122,6 @@ class Objeto3D {
             var h4_pos = gl.getUniformLocation(this.Program, "h4");
             gl.uniform1f(h4_pos,datos.h4);
 
-            if (this.uniformBool.length > 1){
-                var name = gl.getUniformLocation(this.Program, this.uniformBool[0]);
-                gl.uniform1i(name, this.uniformBool[1]);
-            }
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
             gl.vertexAttribPointer(this.Program.textureCoordAttribute, this.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);

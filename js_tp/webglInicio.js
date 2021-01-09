@@ -174,6 +174,8 @@ function initShaders() {
     //use program
     gl.useProgram(glProgram_helicoptero);
     
+    glProgram_helicoptero.textureCoordAttribute = gl.getAttribLocation(glProgram_helicoptero, "aUv");
+    gl.enableVertexAttribArray(glProgram_helicoptero.textureCoordAttribute);
 
     glProgram_helicoptero.vertexPositionAttribute = gl.getAttribLocation(glProgram_helicoptero, "aPosition");
     gl.enableVertexAttribArray(glProgram_helicoptero.vertexPositionAttribute);
