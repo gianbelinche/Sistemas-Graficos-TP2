@@ -15,8 +15,11 @@ class Objeto3D {
         this.textureBuffer = null;
         this.Program = null;
         this.uniformBool = [];
+        this.pos_camara = null;
     }
-
+    set_posicion_camara(pos){
+        this.pos_camara = pos;
+    }
     agregarUniformBool(nombre,valor){
         this.uniformBool.push(nombre);
         this.uniformBool.push(valor);
@@ -99,14 +102,18 @@ class Objeto3D {
         if (this.color){
             gl.uniform3f(this.Program.uColor,this.color[0],this.color[1],this.color[2]);
         }
+        if (this.pos_camara){
+            var name = gl.getUniformLocation(this.Program, "viewDir");
+            gl.uniform3f(name,this.pos_camara[0],this.pos_camara[1],this.pos_camara[2]);
+        }
 
         if (this.textureBuffer){
 
-            var h1_pos = gl.getUniformLocation(this.Program, "h1");
+            var h1_pos = gl.getUniformLocation(this.Program, "h_1");
             gl.uniform1f(h1_pos,datos.h1);
-            var h2_pos = gl.getUniformLocation(this.Program, "h2");
+            var h2_pos = gl.getUniformLocation(this.Program, "h_2");
             gl.uniform1f(h2_pos,datos.h2);
-            var h3_pos = gl.getUniformLocation(this.Program, "h3");
+            var h3_pos = gl.getUniformLocation(this.Program, "h_3");
             gl.uniform1f(h3_pos,datos.h3);
             var h4_pos = gl.getUniformLocation(this.Program, "h4");
             gl.uniform1f(h4_pos,datos.h4);

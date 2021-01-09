@@ -15,6 +15,8 @@ uniform vec3 uLightPosition2;        // posición de la luz
 
 uniform bool isWater;          // usar iluminacion si/no
 
+uniform vec3 viewDir;
+
 uniform sampler2D uSampler;
 uniform sampler2D pastoTex;
 uniform sampler2D gravaTex;
@@ -244,8 +246,13 @@ void main(void) {
         vec3 agua3=texture2D(aguaTex,vUv*2.11).xyz;
         vec3 agua=mix(mix(agua1,agua2,0.5),agua3,0.3);
         color += agua;
+        vec3 lightDirectionSpecular =  normalize(uLightPosition - vWorldPosition.xyz);
+        vec3 reflectDir = reflect(-lightDirectionSpecular, normalize(vNormal));
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 1.0);
+        vec3 specular = 0.02 * spec * uDirectionalColor;
+        color += specular;
     }
-    vec3 lightDirection= normalize(uLightPosition);
+    vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
     color+=uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
     gl_FragColor = vec4(color,1.0);
 }

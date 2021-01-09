@@ -28,7 +28,11 @@ uniform sampler2D pastoTex;
 
 varying vec3 vWorldPosition;
 varying vec3 vNormal;
-varying vec2 vUv;                           
+varying vec2 vUv;          
+
+uniform float h_1;
+uniform float h_2;
+uniform float h_3;
 
 // constantes
 
@@ -131,6 +135,15 @@ float cnoise(vec3 P)
     float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
     return 2.2 * n_xyz;
 }
+
+float crear_olas(vec3 position){
+    float noise1=cnoise(position*8.21+23.13);
+    float noise2=cnoise(position*11.79+9.47);
+    float mask = mix(noise1,noise2,0.5);
+    smoothstep(-0.1,0.1,mask);
+    return mask;
+
+}
 void main(void) {
             
     vec3 position = aPosition;		
@@ -192,20 +205,36 @@ void main(void) {
         vec3 tan2=(gradU1+gradU2)/2.0;
         vNormal=cross(tan1,tan2);
     } else {
-        float noise1=cnoise(vec3(position.xz,time/8.0)*8.23+23.11);
-        float noise2=cnoise(vec3(position.xz,time/8.0)*11.77+9.45);
-        float noise3=cnoise(vec3(position.xz,time/8.0)*14.8+21.2);
-        float noise4=cnoise(vec3(position.xz,time/8.0)*23.6+31.38);
-        float mask = mix(mix(noise1,noise2,0.8),mix(noise3,noise4,0.85),0.6);
-        smoothstep(0.95,1.05,mask);
-        position.y += mask;
+        float olas = crear_olas(vec3(position.xz,time/8.0));
+        position.y += olas;
 
 
         vec4 worldPos = uMMatrix*vec4(position, 1.0);                        
 
         gl_Position = uPMatrix*uVMatrix*worldPos;
         vWorldPosition=worldPos.xyz;
-        vNormal=normal;
+
+        float masX = crear_olas(vec3(position.x + epsilon,position.z,time/8.0));
+        float masZ = crear_olas(vec3(position.x,position.z + epsilon,time/8.0)); 
+
+        float menosX = crear_olas(vec3(position.x - epsilon,position.z,time/8.0));  
+        float menosZ = crear_olas(vec3(position.x,position.z - epsilon,time/8.0)); 
+
+        float angU=atan((masX-olas),epsilon);
+        float angV=atan((masZ-olas),epsilon);
+
+        vec3 gradU1=vec3(cos(angU),sin(angU),0.0);
+        vec3 gradV1=vec3(0.0      ,sin(angV),cos(angV));
+        
+        angU=atan((olas-menosX),epsilon);
+        angV=atan((olas-menosZ),epsilon);
+
+        vec3 gradU2=vec3(cos(angU),sin(angU),0.0);
+        vec3 gradV2=vec3(0.0      ,sin(angV),cos(angV));
+
+        vec3 tan1=(gradV1+gradV2)/2.0;
+        vec3 tan2=(gradU1+gradU2)/2.0;
+        vNormal=cross(tan1,tan2);
     }
     vUv=uv;	
 }
