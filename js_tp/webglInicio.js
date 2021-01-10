@@ -231,7 +231,7 @@ function setupVertexShaderMatrix(){
     mat3.invert(normalMatrix2, normalMatrix2);
     mat3.transpose(normalMatrix2,normalMatrix2);
 
-    gl.uniformMatrix3fv(glProgram_terreno.nMatrixUniform, false, normalMatrix2);
+    //gl.uniformMatrix3fv(glProgram_terreno.nMatrixUniform, false, normalMatrix2);
     
     gl.uniformMatrix4fv(viewMatrixUniform, false, viewMatrix);
     gl.uniformMatrix4fv(projMatrixUniform, false, projMatrix);
@@ -264,7 +264,7 @@ function setupVertexShaderMatrix2(){
     
     gl.uniformMatrix4fv(viewMatrixUniform, false, viewMatrix);
     gl.uniformMatrix4fv(projMatrixUniform, false, projMatrix);
-    gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
+    //gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
     gl.uniform3f(glProgram_helicoptero.directionalColorUniform, 1.0, 1.0, 0.8);
     var lightPosition = [0.0,300.0, -10000.0]; 
     gl.uniform3fv(glProgram_helicoptero.lightingDirectionUniform, lightPosition);    

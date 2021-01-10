@@ -191,7 +191,8 @@ function control(){
         vec3.fromValues(pos_hel[0],pos_hel[1],pos_hel[2]),
         vec3.fromValues(0,1,0)
     );
-    terreno.obtenerHijos()[0].set_posicion_camara(pos_camara);
+    terreno.obtenerHijos()[0].set_posicion_camara(pos_camara); //Agua
+    helicoptero.obtenerCabina().set_posicion_camara(pos_camara); //Cabina
     matriz_model_terreno = m;
     matriz_model = matriz_hel;
 

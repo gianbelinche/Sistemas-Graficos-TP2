@@ -220,6 +220,10 @@ class Helicoptero{
         cilindro_rotor4.rotar(-Math.PI / 16.0,[0.0,0.0,1.0]);
     }
 
+    obtenerCabina(){
+        return this.contenedor_helicoptero.obtenerHijos()[0].obtenerHijos()[0]
+    }
+
 }
 
 export {Helicoptero};

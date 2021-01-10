@@ -25,14 +25,25 @@ function crear_cabina(){
     mat4.translate(m_tapa_1,m_tapa_1,[0.0,0.0,0.1]);
     var m_tapa_2 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0);
     mat4.translate(m_tapa_2,m_tapa_2,[0.0,0.0,0.5]);
-    var m_tapa_1_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,-1.0,0,0,0,1.0);
-    var m_tapa_2_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,1.0,0,0,0,1.0);
+    //var m_tapa_1_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,-1.0,0,0,0,1.0);
+    //var m_tapa_2_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,1.0,0,0,0,1.0);
+    var m_tapa_1_norm = mat4.fromValues( 0,0,0,0
+                                        ,0,0,0,0
+                                        ,0,0,0,0,
+                                         0,0,-1,1);
+    var m_tapa_2_norm = mat4.fromValues(0,0,0,0,
+                                        0,0,0,0,
+                                        0,0,0,0,
+                                        0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m3,m4,m5,m5,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
+    //var recorrido = [[m_tapa_1,m1,m2,m3,m4,m5,m_tapa_2],[m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm]];
     var buffers = generarSuperficie(forma,recorrido);
     var cabina = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     //cabina.set_color([245/255, 238/255, 181/255]);
     cabina.set_texture_buffer(buffers.webgl_uvs_buffer);
     cabina.initTexture("texturas/cabina.png","cabinaTex");
+    cabina.initTexture("texturas/cabina-reflectividad.png","cabinaReflectivaTex");
+    cabina.initTexture("texturas/cielo1.jpg","cabinaReflexionTex");
     cabina.agregarUniformBool("isCabina",true);
 
     return cabina;
@@ -49,8 +60,14 @@ function crear_triangulo(){
     mat4.translate(m_tapa_1,m_tapa_1,[0.0,0.0,0.1]);
     var m_tapa_2 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0);
     mat4.translate(m_tapa_2,m_tapa_2,[0.0,0.0,0.2]);
-    var m_tapa_1_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,-1.0,0,0,0,1.0);
-    var m_tapa_2_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,1.0,0,0,0,1.0);
+    var m_tapa_1_norm = mat4.fromValues( 0,0,0,0
+                                        ,0,0,0,0
+                                        ,0,0,0,0,
+                                        0,0,-1,1);
+    var m_tapa_2_norm = mat4.fromValues(0,0,0,0,
+                                        0,0,0,0,
+                                        0,0,0,0,
+                                        0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
     var buffers = generarSuperficie(forma,recorrido);
     var barra = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
@@ -78,8 +95,14 @@ function crear_cilindro(){
     var m_tapa_2 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0);
     mat4.translate(m_tapa_2,m_tapa_2,[0.0,0.0,1.0]);
     mat4.scale(m_tapa_2,m_tapa_2,[0.1,0.1,1.0]);
-    var m_tapa_1_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,-1.0,0,0,0,1.0);
-    var m_tapa_2_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,1.0,0,0,0,1.0);
+    var m_tapa_1_norm = mat4.fromValues( 0,0,0,0
+        ,0,0,0,0
+        ,0,0,0,0,
+         0,0,-1,1);
+    var m_tapa_2_norm = mat4.fromValues(0,0,0,0,
+            0,0,0,0,
+            0,0,0,0,
+            0,0,1,1);   
     var recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
     var buffers=generarSuperficie(forma,recorrido);
     var cilindro = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
@@ -127,8 +150,14 @@ function crear_cola_ala(){
     var m_tapa_2 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0);
     mat4.translate(m_tapa_2,m_tapa_2,[0.0,0.0,0.2]);
     mat4.scale(m_tapa_2,m_tapa_2,[1.0,1.5,1.0]);
-    var m_tapa_1_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,-1.0,0,0,0,1.0);
-    var m_tapa_2_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,1.0,0,0,0,1.0);
+    var m_tapa_1_norm = mat4.fromValues( 0,0,0,0
+        ,0,0,0,0
+        ,0,0,0,0,
+         0,0,-1,1);
+    var m_tapa_2_norm = mat4.fromValues(0,0,0,0,
+            0,0,0,0,
+            0,0,0,0,
+            0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
     var buffers=generarSuperficie(forma,recorrido);
     var triangulo = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
@@ -176,8 +205,14 @@ function crear_tren_base(){
     var m_tapa_2 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0);
     mat4.translate(m_tapa_2,m_tapa_2,[0.0,-0.05,2.3]);
     mat4.scale(m_tapa_2,m_tapa_2,[0.05,0.05,1.0]);
-    var m_tapa_1_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,-1.0,0,0,0,1.0);
-    var m_tapa_2_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,1.0,0,0,0,1.0);
+    var m_tapa_1_norm = mat4.fromValues( 0,0,0,0
+        ,0,0,0,0
+        ,0,0,0,0,
+         0,0,-1,1);
+    var m_tapa_2_norm = mat4.fromValues(0,0,0,0,
+            0,0,0,0,
+            0,0,0,0,
+            0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m3,m4,m5,m6,m7,m8,m8,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
     var buffers=generarSuperficie(forma,recorrido);
     var base = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
@@ -222,8 +257,14 @@ function crear_rotor_union(){
     mat4.scale(m_tapa_2,m_tapa_2,[0.5,0.5,1.0]);
     var forma = curvas_bezier([[-0.1,-0.1],[-0.25,-0.05],[-0.25,0.05],[-0.1,0.1],[-0.1,0.1],[-0.05,0.15],[0.05,0.15],[0.1,0.1],[0.1,0.1],[0.25,0.05],[0.25,-0.05],[0.1,-0.1],[0.1,-0.1],[0.05,-0.15],[-0.05,-0.15],[-0.1,-0.1]],100);
     forma.push(forma[0]);
-    var m_tapa_1_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,-1.0,0,0,0,1.0);
-    var m_tapa_2_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,1.0,0,0,0,1.0);
+    var m_tapa_1_norm = mat4.fromValues( 0,0,0,0
+        ,0,0,0,0
+        ,0,0,0,0,
+         0,0,-1,1);
+    var m_tapa_2_norm = mat4.fromValues(0,0,0,0,
+            0,0,0,0,
+            0,0,0,0,
+            0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
     var buffers=generarSuperficie(forma,recorrido);
     var union = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
@@ -239,8 +280,14 @@ function crear_eje(){
     var m_tapa_1 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0);
     var m_tapa_2 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0); 
     mat4.translate(m_tapa_2,m_tapa_2,[0.0,0.0,0.1]);
-    var m_tapa_1_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,-1.0,0,0,0,1.0);
-    var m_tapa_2_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,1.0,0,0,0,1.0);
+    var m_tapa_1_norm = mat4.fromValues( 0,0,0,0
+        ,0,0,0,0
+        ,0,0,0,0,
+         0,0,-1,1);
+    var m_tapa_2_norm = mat4.fromValues(0,0,0,0,
+            0,0,0,0,
+            0,0,0,0,
+            0,0,1,1);
     recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
     var buffers=generarSuperficie(forma,recorrido);
     return new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);

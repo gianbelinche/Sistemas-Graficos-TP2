@@ -1,4 +1,4 @@
-import {mat4,gl,datos} from "./main.js";
+import {mat4,gl,datos,mat3} from "./main.js";
 import {onTextureLoaded} from "./webglInicio.js";
 class Objeto3D {
     constructor(vertexBuffer,indexBuffer,normalBuffer){
@@ -99,6 +99,15 @@ class Objeto3D {
         mat4.multiply(m,matriz,this.matriz_modelado);
         var modelMatrixUniform = gl.getUniformLocation(this.Program, "uMMatrix");
         gl.uniformMatrix4fv(modelMatrixUniform, false, m);
+
+
+        var normalMatrixUniform  = gl.getUniformLocation(this.Program, "uNMatrix");
+        var normalMatrix = mat4.create();
+        mat3.fromMat4(normalMatrix,m); // normalMatrix= (inversa(traspuesta(matrizModelado)));
+        mat3.invert(normalMatrix, normalMatrix);
+        mat3.transpose(normalMatrix,normalMatrix);
+        gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
+
         if (this.color){
             gl.uniform3f(this.Program.uColor,this.color[0],this.color[1],this.color[2]);
         }

@@ -1,6 +1,6 @@
 import {gl,mat4} from "./main.js";
 var vec3 = glMatrix.vec3;
-
+var vec4 = glMatrix.vec4;
 /*
 Creacion de una superfice utilizando superficies de barrido
 Se plantea definiendo para las posiciones como simplemete la posicion de la forma por la matriz de recorrido
@@ -38,23 +38,29 @@ function generarSuperficie(forma,recorrido){
             if (i == columnas){
                 sig = 1;
             }
+            var ant = i-1;
+            if (i == 0){
+                ant = columnas - 2;
+            }
             var elem_sig = copia_forma[sig];
-            var normal = [elem_sig[0] - elem[0],elem_sig[1] - elem[1],0.0];
-            var modulo = Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1]);
-            normal = [normal[0] / modulo,normal[1] / modulo,0.0];
+            var elem_ant = copia_forma[ant];
+            
+            var ang1=Math.atan2(elem_sig[1] - elem[1],elem_sig[0] - elem[0]);
+            var ang2=Math.atan2(elem[1] - elem_ant[1],elem[0] - elem_ant[0]);
+            var grad1=[Math.cos(ang1),Math.sin(ang1),0.0];
+            var grad2=[Math.cos(ang2),Math.sin(ang2),0.0];
+            var tan = (grad1 + grad2) / 2;
             var m = mat4.create();
             mat4.rotate(m,m,Math.PI / 2.0,[0.0,0.0,1.0]);
-            vec3.transformMat4(nrm,normal,m);
+            vec3.transformMat4(nrm,grad1,m);
+
             vec3.transformMat4(nrm,nrm,matriz_norm);
+
 
             normalBuffer.push(nrm[0]);
             normalBuffer.push(nrm[1]);
             normalBuffer.push(nrm[2]);
 
-            
-
-            //uvBuffer.push(pos[1]);
-            //uvBuffer.push(pos[0]);
 
         }
     }
