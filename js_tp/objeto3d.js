@@ -115,9 +115,9 @@ class Objeto3D {
             var name = gl.getUniformLocation(this.Program, "viewDir");
             gl.uniform3f(name,this.pos_camara[0],this.pos_camara[1],this.pos_camara[2]);
         }
-        if (this.uniformBool.length > 1){
-            var name = gl.getUniformLocation(this.Program, this.uniformBool[0]);
-            gl.uniform1i(name, this.uniformBool[1]);
+        for (var i = 0; i < this.uniformBool.length; i += 2){
+            var name = gl.getUniformLocation(this.Program, this.uniformBool[i]);
+            gl.uniform1i(name, this.uniformBool[i+1]);
         }
 
         if (this.textureBuffer){

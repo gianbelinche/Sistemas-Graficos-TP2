@@ -12,6 +12,7 @@ uniform sampler2D cabinaTex;
 uniform sampler2D cabinaReflectivaTex;
 uniform sampler2D cabinaReflexionTex;
 uniform bool isCabina;
+uniform bool usarReflexion;
 
 
 void main(void) {
@@ -27,13 +28,36 @@ void main(void) {
             vec3 worldNormal = normalize(vNormal);
             vec3 eyeToSurfaceDir = normalize(vPosWorld - viewDir);
             vec3 direction = reflect(eyeToSurfaceDir,worldNormal);
+            float m = 2. * sqrt(
+                pow( direction.x, 2. ) +
+                pow( direction.y, 2. ) +
+                pow( direction.z + 1., 2. )
+            );
+
             float r = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
             float alfa = atan(direction.y , direction.x);
             float beta = acos(direction.z/r);
-            vec3 cabina_reflexion = texture2D(cabinaReflexionTex,vec2(beta/pi,alfa/(2.0*pi))).xyz;
+            //vec3 cabina_reflexion = texture2D(cabinaReflexionTex,vec2(((pi/2.0)-beta)/pi,alfa/(2.0*pi))).xyz;
+            vec3 cabina_reflexion = texture2D(cabinaReflexionTex,direction.xy / m + .5).xyz;
             color += cabina_reflexion;
         }
+    }
+    if (usarReflexion){
+        vec3 worldNormal = normalize(vNormal);
+        vec3 eyeToSurfaceDir = normalize(vPosWorld - viewDir);
+        vec3 direction = reflect(eyeToSurfaceDir,worldNormal);
+        float m = 2. * sqrt(
+            pow( direction.x, 2. ) +
+            pow( direction.y, 2. ) +
+            pow( direction.z + 1., 2. )
+        );
 
+        float r = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        float alfa = atan(direction.y , direction.x);
+        float beta = acos(direction.z/r);
+        //vec3 cabina_reflexion = texture2D(cabinaReflexionTex,vec2(((pi/2.0)-beta)/pi,alfa/(2.0*pi))).xyz;
+        vec3 reflexion = texture2D(cabinaReflexionTex,direction.yx / m + .5).xyz;
+        color += reflexion;
     }
 
    gl_FragColor = vec4(color,1.0);

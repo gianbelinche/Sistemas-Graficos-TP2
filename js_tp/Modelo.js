@@ -25,8 +25,6 @@ function crear_cabina(){
     mat4.translate(m_tapa_1,m_tapa_1,[0.0,0.0,0.1]);
     var m_tapa_2 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0);
     mat4.translate(m_tapa_2,m_tapa_2,[0.0,0.0,0.5]);
-    //var m_tapa_1_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,-1.0,0,0,0,1.0);
-    //var m_tapa_2_norm = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,0.0,1.0,0,0,0,1.0);
     var m_tapa_1_norm = mat4.fromValues( 0,0,0,0
                                         ,0,0,0,0
                                         ,0,0,0,0,
@@ -36,7 +34,7 @@ function crear_cabina(){
                                         0,0,0,0,
                                         0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m3,m4,m5,m5,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
-    //var recorrido = [[m_tapa_1,m1,m2,m3,m4,m5,m_tapa_2],[m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm]];
+    //var recorrido = [[m_tapa_1,m1,m1,m2,m3,m4,m5,m5,m_tapa_2],[m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm]];
     var buffers = generarSuperficie(forma,recorrido);
     var cabina = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     //cabina.set_color([245/255, 238/255, 181/255]);
@@ -45,6 +43,7 @@ function crear_cabina(){
     cabina.initTexture("texturas/cabina-reflectividad.png","cabinaReflectivaTex");
     cabina.initTexture("texturas/cielo1.jpg","cabinaReflexionTex");
     cabina.agregarUniformBool("isCabina",true);
+    cabina.agregarUniformBool("usarReflexion",false);
 
     return cabina;
 }
@@ -72,6 +71,7 @@ function crear_triangulo(){
     var buffers = generarSuperficie(forma,recorrido);
     var barra = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     barra.agregarUniformBool("isCabina",false);
+    barra.agregarUniformBool("usarReflexion",false);
     return barra;
 }
 
@@ -107,6 +107,7 @@ function crear_cilindro(){
     var buffers=generarSuperficie(forma,recorrido);
     var cilindro = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     cilindro.agregarUniformBool("isCabina",false);
+    cilindro.agregarUniformBool("usarReflexion",false);
     return cilindro;
 }
 
@@ -162,6 +163,7 @@ function crear_cola_ala(){
     var buffers=generarSuperficie(forma,recorrido);
     var triangulo = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     triangulo.agregarUniformBool("isCabina",false);
+    triangulo.agregarUniformBool("usarReflexion",false);
     return triangulo;
 }
 
@@ -217,6 +219,7 @@ function crear_tren_base(){
     var buffers=generarSuperficie(forma,recorrido);
     var base = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     base.agregarUniformBool("isCabina",false);
+    base.agregarUniformBool("usarReflexion",false);
     return base;
 }
 
@@ -227,8 +230,11 @@ function crear_rotor_aro(){
     for (var i = 0; i < recorrido_puntos.length;i++){
         var m = mat4.create();
         mat4.translate(m,m,[0.0,recorrido_puntos[i][0],recorrido_puntos[i][1]]);
+        mat4.rotate(m,m,Math.atan2(recorrido_puntos[i][1],recorrido_puntos[i][0]),[1.0,0.0,0.0]);
+        var m1 = mat4.create();
+        mat4.rotate(m1,m1,Math.atan2(recorrido_puntos[i][1],recorrido_puntos[i][0]),[1.0,0.0,0.0]);
         recorrido[0].push(m);
-        recorrido[1].push(mat4.create());
+        recorrido[1].push(m1);
     }
     var m = mat4.create();
     mat4.translate(m,m,[0.0,recorrido_puntos[0][0],recorrido_puntos[0][1]]);
@@ -239,6 +245,8 @@ function crear_rotor_aro(){
     var buffers=generarSuperficie(forma,recorrido);
     var aro = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     aro.agregarUniformBool("isCabina",false);
+    aro.agregarUniformBool("usarReflexion",true);
+    aro.initTexture("texturas/cielo1.jpg","cabinaReflexionTex");
     return aro;
 }
 
@@ -269,6 +277,7 @@ function crear_rotor_union(){
     var buffers=generarSuperficie(forma,recorrido);
     var union = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     union.agregarUniformBool("isCabina",false);
+    union.agregarUniformBool("usarReflexion",false);
     return union;
 }
 
