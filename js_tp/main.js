@@ -13,18 +13,14 @@ sound.loop = true;
 document.body.appendChild(sound);
 sound.play();
 var Sonido = "Activado";
-var modo = "smooth";
-var zoom = 1.0;
-function crear_parametros(modo,sonido,zoom,h1,h2,h3,h4){
-    this.modo = modo;
+function crear_parametros(sonido,h1,h2,h3,h4){
     this.Sonido = sonido;
-    this.zoom = zoom;
     this.h1 = h1;
     this.h2 = h2;
     this.h3 = h3;
     this.h4 = h4;
 }
-var datos = new crear_parametros(modo,Sonido,zoom,0.5,0.3,0.0,0.0);
+var datos = new crear_parametros(Sonido,0.5,0.3,0.0,0.0);
 var mat4=glMatrix.mat4;
 var vec3=glMatrix.vec3;
 var mat3=glMatrix.mat3;
@@ -62,9 +58,7 @@ Inicia el menu que controla las variables modo y Sonido
 */
 function initMenu(){
     var gui = new dat.GUI({"hideable" : false});
-    gui.add(datos,"modo",["wireframe","smooth"]);
     gui.add(datos,"Sonido",["Activado","Desactivado"]);
-    gui.add(datos,"zoom",0.2,4.0,0.1);
     gui.add(datos,"h1",0,1,0.01);
     gui.add(datos,"h2",0,1,0.01);
     gui.add(datos,"h3",0,1,0.01);
@@ -109,8 +103,16 @@ $('body').mouseup(function(event){
     }		
 });
 
+function zoom(event){
+    if (event.deltaY < 0){
+        camara.disminuirZoom(event.deltaY * -0.1);
+    } else {
+        camara.aumentarZoom(event.deltaY * 0.1);
+    }
+}
+document.addEventListener('wheel', zoom);
+
 $('body').on("keydown",function(event){
-    console.log(event);
 
     if (event.keyCode==49 || event.keyCode==97){
         camara = camara_orbital;
@@ -129,6 +131,12 @@ $('body').on("keydown",function(event){
     }
     if (event.keyCode==72){
         helicoptero.modificarContraccionHelices();
+    }
+    if (event.keyCode == 109){
+        camara.disminuirZoom(0.1);
+    }
+    if (event.keyCode == 107){
+        camara.aumentarZoom(0.1);
     }
         
 });
@@ -176,7 +184,6 @@ function control(){
     
     gl.uniform2f(glProgram_terreno.traslacionTextura,(vec[0] - vec[0] % 10) / 500,(vec[2] - vec[2] % 10)/500);
     
-    camara.set_zoom(datos.zoom);
     camara.rotar();
     var matriz_hel = helicoptero.getMatrizModelado();
     var matriz_camara = camara.getMatrizModelado();

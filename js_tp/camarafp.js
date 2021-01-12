@@ -32,8 +32,26 @@ class CamaraFP{
         }
         this.objeto.mover(this.vista);
     }
-    set_zoom(zoom){
+    /*set_zoom(zoom){
         this.zoom = zoom;
+    }*/
+    disminuirZoom(zoom){
+        if (this.zoom - zoom >= 0.3){
+            this.zoom -= zoom;
+            var mouse = this.isMouseDown;
+            this.isMouseDown = true;
+            this.rotar();
+            this.isMouseDown = mouse;
+        }
+    }
+    aumentarZoom(zoom){
+        if (this.zoom + zoom <= 4.0){
+            this.zoom += zoom;
+            var mouse = this.isMouseDown;
+            this.isMouseDown = true;
+            this.rotar();
+            this.isMouseDown = mouse;
+        }
     }
     movimientoMouse(x,y){
         this.mouse.x = x;
