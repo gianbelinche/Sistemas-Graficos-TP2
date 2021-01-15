@@ -44,6 +44,7 @@ function crear_cabina(){
     cabina.initTexture("texturas/cielo1.jpg","cabinaReflexionTex");
     cabina.agregarUniformBool("isCabina",true);
     cabina.agregarUniformBool("usarReflexion",false);
+    cabina.agregarUniformBool("usarTextura",true);
 
     return cabina;
 }
@@ -72,6 +73,7 @@ function crear_triangulo(){
     var barra = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     barra.agregarUniformBool("isCabina",false);
     barra.agregarUniformBool("usarReflexion",false);
+    barra.agregarUniformBool("usarTextura",false);
     return barra;
 }
 
@@ -108,6 +110,7 @@ function crear_cilindro(){
     var cilindro = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     cilindro.agregarUniformBool("isCabina",false);
     cilindro.agregarUniformBool("usarReflexion",false);
+    cilindro.agregarUniformBool("usarTextura",false);
     return cilindro;
 }
 
@@ -164,6 +167,7 @@ function crear_cola_ala(){
     var triangulo = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     triangulo.agregarUniformBool("isCabina",false);
     triangulo.agregarUniformBool("usarReflexion",false);
+    triangulo.agregarUniformBool("usarTextura",false);
     return triangulo;
 }
 
@@ -220,6 +224,7 @@ function crear_tren_base(){
     var base = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     base.agregarUniformBool("isCabina",false);
     base.agregarUniformBool("usarReflexion",false);
+    base.agregarUniformBool("usarTextura",false);
     return base;
 }
 
@@ -247,6 +252,7 @@ function crear_rotor_aro(){
     aro.agregarUniformBool("isCabina",false);
     aro.agregarUniformBool("usarReflexion",true);
     aro.initTexture("texturas/cielo1.jpg","cabinaReflexionTex");
+    aro.agregarUniformBool("usarTextura",false);
     return aro;
 }
 
@@ -278,6 +284,7 @@ function crear_rotor_union(){
     var union = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     union.agregarUniformBool("isCabina",false);
     union.agregarUniformBool("usarReflexion",false);
+    union.agregarUniformBool("usarTextura",false);
     return union;
 }
 
@@ -530,5 +537,28 @@ function crear_terreno(latitud,longitud,lado){
     terreno.set_texture_buffer(webgl_texture_coord_buffer);
     return terreno;
 }*/
-
-export {crear_cabina,crear_tren,crear_cola,crear_rotor,crear_terreno};
+function crear_plataforma(){
+    var forma = [[-0.5,-0.5],[0.5,-0.5],[0.5,0.5],[-0.5,0.5],[-0.5,-0.5]];
+    var m1 = mat4.create();
+    var m2 = mat4.create();
+    mat4.translate(m2,m2,[0.0,0.0,0.1]);
+    var m_tapa_1 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0);
+    var m_tapa_2 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0); 
+    mat4.translate(m_tapa_2,m_tapa_2,[0.0,0.0,0.1]);
+    var m_tapa_1_norm = mat4.fromValues( 0,0,0,0
+        ,0,0,0,0
+        ,0,0,0,0,
+         0,0,-1,1);
+    var m_tapa_2_norm = mat4.fromValues(0,0,0,0,
+            0,0,0,0,
+            0,0,0,0,
+            0,0,1,1);
+    var recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
+    var buffers=generarSuperficie(forma,recorrido);
+    var plataforma = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
+    plataforma.set_texture_buffer(buffers.webgl_uvs_buffer);
+    plataforma.initTexture("texturas/helipad.jpg","cabinaTex");
+    plataforma.agregarUniformBool("usarTextura",true);
+    return plataforma;
+}
+export {crear_cabina,crear_tren,crear_cola,crear_rotor,crear_terreno,crear_plataforma};

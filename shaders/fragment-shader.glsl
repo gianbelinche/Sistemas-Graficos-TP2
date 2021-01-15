@@ -12,6 +12,7 @@ uniform sampler2D cabinaTex;
 uniform sampler2D cabinaReflectivaTex;
 uniform sampler2D cabinaReflexionTex;
 uniform bool isCabina;
+uniform bool usarTextura;
 uniform bool usarReflexion;
 
 
@@ -20,9 +21,11 @@ void main(void) {
     vec3 lightDirection= normalize(uLightPosition - vPosWorld);
     vec3 color = vColor;
     color += uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
-    if (isCabina){
+    if (usarTextura){
         vec3 cabina=texture2D(cabinaTex,vUv).xyz;
         color += cabina;
+    }
+    if (isCabina){
         vec3 cabina_reflectiva = texture2D(cabinaReflectivaTex,vUv).xyz;
         if (cabina_reflectiva == vec3(1.0,1.0,1.0)){
             vec3 worldNormal = normalize(vNormal);

@@ -1,7 +1,7 @@
 import {CamaraFP} from "./camarafp.js";
 import {ControlHelicoptero} from "./controlHelicoptero.js";
 import {Helicoptero} from "./helicoptero.js";
-import {crear_terreno} from "./Modelo.js";
+import {crear_terreno,crear_plataforma} from "./Modelo.js";
 import { Objeto3D } from "./objeto3d.js";
 import {loadShaders,initShaders,setupVertexShaderMatrix,setupVertexShaderMatrix2,setupWebGL,glProgram_terreno,glProgram_helicoptero} from "./webglInicio.js";
 var sound = document.createElement("audio");
@@ -48,6 +48,7 @@ var camara_trasera = null;
 var camara_extra = null;
 var helicoptero = null;
 var terreno = null;
+var plataforma = null;
 var longitud = 255; //Mas grande que esto empieza a deformarse la textura
 var latitud = 255;
 var lado = 100;
@@ -72,14 +73,20 @@ function setupModelo(){
     camara_extra = new CamaraFP("extra");
     camara = camara_extra;
     helicoptero = new Helicoptero();
+    plataforma = crear_plataforma();
+    plataforma.mover([0,8,0]);
+    plataforma.escalar([3,35,3]);
+    plataforma.rotar(Math.PI / 2,[1,0,0]);
     camara_trasera.agregarAHijo(helicoptero);
     camara_lateral.agregarAHijo(helicoptero);
     camara_superior.agregarAHijo(helicoptero);
     camara_extra.agregarAHijo(helicoptero);
     camara_orbital.agregarAHijo(helicoptero);
     helicoptero.set_program(glProgram_helicoptero);
+    plataforma.set_program(glProgram_helicoptero);
     terreno = crear_terreno(latitud,longitud,lado);
     terreno.set_program(glProgram_terreno);
+    //terreno.agregarHijo(plataforma);
 }
             
 /*
@@ -152,6 +159,7 @@ function drawScene(){
     gl.useProgram(glProgram_helicoptero);
     setupVertexShaderMatrix2();
     helicoptero.dibujar(mat4.create());
+    plataforma.dibujar(mat4.create());
     gl.useProgram(glProgram_terreno);
     setupVertexShaderMatrix();
     terreno.dibujar(mat4.create());
@@ -175,6 +183,12 @@ function control(){
     terreno.rotar(roty,[0.0,1.0,0.0]);
     terreno.set_posicion([p.x - p.x % 10,0.0,p.z - p.z % 10]);
     terreno.rotar(-roty,[0.0,1.0,0.0]);
+    
+
+    //plataforma.rotar(roty,[0.0,1.0,0.0]);
+    //plataforma.set_posicion([-(p.x - p.x % 10)/200,8.0,(p.z - p.z % 10)/200]);
+    //plataforma.set_posicion([x,8,z]);
+    //plataforma.rotar(-roty,[0.0,1.0,0.0]);
 
     
 
@@ -189,6 +203,19 @@ function control(){
     var matriz_camara = camara.getMatrizModelado();
     var pos_hel = vec3.create();
     vec3.transformMat4(pos_hel,pos_hel,matriz_hel);
+    var x = 0;
+    var z = 8;
+    if ((pos_hel[0] - pos_hel[0] % 10) < 0){
+        x = -0.1;
+    }
+    if ((pos_hel[2] - pos_hel[2] % 10) < 0){
+        z += -3.3;
+    }
+    if ((pos_hel[2] - pos_hel[2] % 10) > 0){
+        z += 3.3;
+    }
+    console.log(pos_hel[2]);
+    plataforma.set_posicion([x,z,0]);
     var pos_camara = vec3.create();
     var matriz_conjunta = mat4.create();
     mat4.multiply(matriz_conjunta,matriz_hel,matriz_camara);
