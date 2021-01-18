@@ -15,6 +15,7 @@ uniform vec2 traslacionTextura;
                 
 uniform float time;                 // tiempo en segundos
 uniform bool isWater;
+uniform bool isSky;
 
 uniform sampler2D uSampler;         // sampler de textura de la tierra
 uniform sampler2D pastoTex;
@@ -149,7 +150,43 @@ void main(void) {
     vec3 position = aPosition;		
     vec3 normal = aNormal;	
     vec2 uv = aUv;
-    if (!isWater){
+    if (isWater){
+        float olas = crear_olas(vec3(position.xz,time/8.0));
+        position.y += olas;
+
+
+        vec4 worldPos = uMMatrix*vec4(position, 1.0);                        
+
+        gl_Position = uPMatrix*uVMatrix*worldPos;
+        vWorldPosition=worldPos.xyz;
+
+        float masX = crear_olas(vec3(position.x + epsilon,position.z,time/8.0));
+        float masZ = crear_olas(vec3(position.x,position.z + epsilon,time/8.0)); 
+
+        float menosX = crear_olas(vec3(position.x - epsilon,position.z,time/8.0));  
+        float menosZ = crear_olas(vec3(position.x,position.z - epsilon,time/8.0)); 
+
+        float angU=atan((masX-olas),epsilon);
+        float angV=atan((masZ-olas),epsilon);
+
+        vec3 gradU1=vec3(cos(angU),sin(angU),0.0);
+        vec3 gradV1=vec3(0.0      ,sin(angV),cos(angV));
+        
+        angU=atan((olas-menosX),epsilon);
+        angV=atan((olas-menosZ),epsilon);
+
+        vec3 gradU2=vec3(cos(angU),sin(angU),0.0);
+        vec3 gradV2=vec3(0.0      ,sin(angV),cos(angV));
+
+        vec3 tan1=(gradV1+gradV2)/2.0;
+        vec3 tan2=(gradU1+gradU2)/2.0;
+        vNormal=cross(tan1,tan2);
+    } else if (isSky){
+        vec4 worldPos = uMMatrix*vec4(position, 1.0);
+        gl_Position = uPMatrix*uVMatrix*worldPos;
+        vWorldPosition=worldPos.xyz;
+        vNormal = aNormal;
+    } else {
         uv.s = uv.s + traslacionTextura.y;
         uv.t = uv.t - traslacionTextura.x;
         vec4 center = texture2D(uSampler, vec2(uv.s, uv.t));                     
@@ -201,37 +238,6 @@ void main(void) {
 
         
         // calculo el producto vectorial
-        vec3 tan1=(gradV1+gradV2)/2.0;
-        vec3 tan2=(gradU1+gradU2)/2.0;
-        vNormal=cross(tan1,tan2);
-    } else {
-        float olas = crear_olas(vec3(position.xz,time/8.0));
-        position.y += olas;
-
-
-        vec4 worldPos = uMMatrix*vec4(position, 1.0);                        
-
-        gl_Position = uPMatrix*uVMatrix*worldPos;
-        vWorldPosition=worldPos.xyz;
-
-        float masX = crear_olas(vec3(position.x + epsilon,position.z,time/8.0));
-        float masZ = crear_olas(vec3(position.x,position.z + epsilon,time/8.0)); 
-
-        float menosX = crear_olas(vec3(position.x - epsilon,position.z,time/8.0));  
-        float menosZ = crear_olas(vec3(position.x,position.z - epsilon,time/8.0)); 
-
-        float angU=atan((masX-olas),epsilon);
-        float angV=atan((masZ-olas),epsilon);
-
-        vec3 gradU1=vec3(cos(angU),sin(angU),0.0);
-        vec3 gradV1=vec3(0.0      ,sin(angV),cos(angV));
-        
-        angU=atan((olas-menosX),epsilon);
-        angV=atan((olas-menosZ),epsilon);
-
-        vec3 gradU2=vec3(cos(angU),sin(angU),0.0);
-        vec3 gradV2=vec3(0.0      ,sin(angV),cos(angV));
-
         vec3 tan1=(gradV1+gradV2)/2.0;
         vec3 tan2=(gradU1+gradU2)/2.0;
         vNormal=cross(tan1,tan2);

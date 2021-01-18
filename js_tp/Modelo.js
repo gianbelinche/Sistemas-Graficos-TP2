@@ -490,8 +490,11 @@ function crear_terreno(latitudeBands,longitudeBands,lado){
     terreno.initTexture("texturas/roca.jpg","rocaTex");
     terreno.initTexture("texturas/tierra.jpg","tierraTex");
     terreno.agregarUniformBool("isWater",false);
+    terreno.agregarUniformBool("isSky",false);
     var agua = crear_agua(latitudeBands,longitudeBands,lado);
+    var cielo = crear_cielo(latitudeBands,longitudeBands,lado / 2);
     terreno.agregarHijo(agua);
+    terreno.agregarHijo(cielo);
     agua.mover([0.0,3.25,0.0]);
     return terreno;
 }
@@ -500,6 +503,7 @@ function crear_agua(latitudeBands,longitudeBands,lado){
     var agua = crear_plano(latitudeBands,longitudeBands,lado);
     agua.initTexture("texturas/agua.jpg","aguaTex");
     agua.agregarUniformBool("isWater",true);
+    agua.agregarUniformBool("isSky",false);
     return agua;
 }
 /*
@@ -560,5 +564,99 @@ function crear_plataforma(){
     plataforma.initTexture("texturas/helipad.jpg","cabinaTex");
     plataforma.agregarUniformBool("usarTextura",true);
     return plataforma;
+}
+
+function crear_cielo(latitudeBands, longitudeBands,radio){
+    var position_buffer = [];
+    var normal_buffer = [];
+    var texture_coord_buffer = [];
+
+    var latNumber;
+    var longNumber;
+
+    for (latNumber=0; latNumber <= latitudeBands; latNumber++) {
+        var theta =latNumber * Math.PI / (latitudeBands);
+        var sinTheta = Math.sin(theta);
+        var cosTheta = Math.cos(theta);
+
+
+        for (longNumber=0; longNumber <= longitudeBands; longNumber++) {
+            var phi = longNumber * 2 * Math.PI / longitudeBands;
+            var sinPhi = Math.sin(phi);
+            var cosPhi = Math.cos(phi);
+
+            var r=radio;                        
+
+            var x = cosPhi * sinTheta*r;
+            var y = cosTheta*r;
+            var z = sinPhi * sinTheta*r;
+
+            var u =  (longNumber / longitudeBands);
+            var v = 1-(latNumber / latitudeBands);
+
+            normal_buffer.push(x);
+            normal_buffer.push(y);
+            normal_buffer.push(z);
+
+            texture_coord_buffer.push(u);
+            texture_coord_buffer.push(v);
+            
+            position_buffer.push(x);
+            position_buffer.push(y);
+            position_buffer.push(z);
+        }
+    }
+
+    // Buffer de indices de los triangulos
+    var index_buffer = [];
+    
+    for (latNumber=0; latNumber < latitudeBands; latNumber++) {
+        for (longNumber=0; longNumber < longitudeBands; longNumber++) {
+
+            var first = (latNumber * (longitudeBands + 1)) + longNumber;
+            var second = first + longitudeBands + 1;
+
+            index_buffer.push(first);
+            index_buffer.push(second);
+            index_buffer.push(first + 1);
+
+            index_buffer.push(second);
+            index_buffer.push(second + 1);
+            index_buffer.push(first + 1);
+            
+        }
+    }
+
+    // Creación e Inicialización de los buffers a nivel de OpenGL
+    var webgl_normal_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, webgl_normal_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normal_buffer), gl.STATIC_DRAW);
+    webgl_normal_buffer.itemSize = 3;
+    webgl_normal_buffer.numItems = normal_buffer.length / 3;
+
+    var webgl_texture_coord_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, webgl_texture_coord_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texture_coord_buffer), gl.STATIC_DRAW);
+    webgl_texture_coord_buffer.itemSize = 2;
+    webgl_texture_coord_buffer.numItems = texture_coord_buffer.length / 2;
+
+    var webgl_position_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, webgl_position_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(position_buffer), gl.STATIC_DRAW);
+    webgl_position_buffer.itemSize = 3;
+    webgl_position_buffer.numItems = position_buffer.length / 3;
+
+    var webgl_index_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webgl_index_buffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(index_buffer), gl.STATIC_DRAW);
+    webgl_index_buffer.itemSize = 1;
+    webgl_index_buffer.numItems = index_buffer.length;
+
+    var cielo = new Objeto3D(webgl_position_buffer,webgl_index_buffer,webgl_normal_buffer);
+    cielo.set_texture_buffer(webgl_texture_coord_buffer);
+    cielo.initTexture("texturas/cielo1.jpg","CieloTex");
+    cielo.agregarUniformBool("isWater",false);
+    cielo.agregarUniformBool("isSky",true);
+    return cielo;
 }
 export {crear_cabina,crear_tren,crear_cola,crear_rotor,crear_terreno,crear_plataforma};

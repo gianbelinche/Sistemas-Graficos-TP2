@@ -13,7 +13,8 @@ uniform vec3 uLightPosition;        // posición de la luz
 uniform vec3 uDirectionalColor2;	    // color de luz direccional
 uniform vec3 uLightPosition2;        // posición de la luz   
 
-uniform bool isWater;          // usar iluminacion si/no
+uniform bool isWater;          
+uniform bool isSky;
 
 uniform vec3 viewDir;
 
@@ -25,6 +26,8 @@ uniform sampler2D musgoTex;
 uniform sampler2D arenaTex;
 uniform sampler2D rocaTex;
 uniform sampler2D aguaTex;
+uniform sampler2D cieloTex;
+
 
 
 uniform float h1;
@@ -168,8 +171,27 @@ float cnoise(vec3 P)
 
 
 void main(void) {
-    vec3 color=uAmbientColor;
-    if (!isWater){
+    vec3 color = vec3(0.0,0.0,0.0);
+    if (isWater){
+        color=uAmbientColor;
+        vec3 agua1=texture2D(aguaTex,vUv*4.0).xyz;
+        vec3 agua2=texture2D(aguaTex,vUv*3.77).xyz;
+        vec3 agua3=texture2D(aguaTex,vUv*2.11).xyz;
+        vec3 agua=mix(mix(agua1,agua2,0.5),agua3,0.3);
+        color += agua;
+        vec3 lightDirectionSpecular =  normalize(uLightPosition - vWorldPosition.xyz);
+        vec3 reflectDir = reflect(-lightDirectionSpecular, normalize(vNormal));
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 1.0);
+        vec3 specular = 0.02 * spec * uDirectionalColor;
+        color += specular;
+
+        vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
+        color+=uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
+    } else if (isSky){
+        vec3 sky = texture2D(cieloTex,vUv).xyz;
+        color = sky;
+    } else {
+        color=uAmbientColor;
         vec3 pasto1=texture2D(pastoTex,vUv*4.0).xyz;
         vec3 pasto2=texture2D(pastoTex,vUv*3.77).xyz;
         vec3 pasto3=texture2D(pastoTex,vUv*2.11).xyz;
@@ -240,19 +262,9 @@ void main(void) {
         vec3 lightDirection2= normalize(uLightPosition2);
         color+=zona;
         color+=uDirectionalColor2*max(dot(normalize(vNormal),lightDirection2), 0.0) *0.15;
-    } else {
-        vec3 agua1=texture2D(aguaTex,vUv*4.0).xyz;
-        vec3 agua2=texture2D(aguaTex,vUv*3.77).xyz;
-        vec3 agua3=texture2D(aguaTex,vUv*2.11).xyz;
-        vec3 agua=mix(mix(agua1,agua2,0.5),agua3,0.3);
-        color += agua;
-        vec3 lightDirectionSpecular =  normalize(uLightPosition - vWorldPosition.xyz);
-        vec3 reflectDir = reflect(-lightDirectionSpecular, normalize(vNormal));
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 1.0);
-        vec3 specular = 0.02 * spec * uDirectionalColor;
-        color += specular;
+
+        vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
+        color+=uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
     }
-    vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
-    color+=uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
     gl_FragColor = vec4(color,1.0);
 }
