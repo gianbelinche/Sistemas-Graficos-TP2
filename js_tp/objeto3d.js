@@ -19,6 +19,9 @@ class Objeto3D {
     }
     set_posicion_camara(pos){
         this.pos_camara = pos;
+        for (var i = 0; i < this.hijos.length;i++){
+            this.hijos[i].set_posicion_camara(pos);
+        }
     }
     agregarUniformBool(nombre,valor){
         this.uniformBool.push(nombre);

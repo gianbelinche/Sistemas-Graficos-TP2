@@ -29,7 +29,8 @@ uniform sampler2D pastoTex;
 
 varying vec3 vWorldPosition;
 varying vec3 vNormal;
-varying vec2 vUv;          
+varying vec2 vUv;        
+varying vec3 viewPos;  
 
 uniform float h_1;
 uniform float h_2;
@@ -159,6 +160,7 @@ void main(void) {
 
         gl_Position = uPMatrix*uVMatrix*worldPos;
         vWorldPosition=worldPos.xyz;
+        
 
         float masX = crear_olas(vec3(position.x + epsilon,position.z,time/8.0));
         float masZ = crear_olas(vec3(position.x,position.z + epsilon,time/8.0)); 

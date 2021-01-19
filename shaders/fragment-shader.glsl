@@ -63,5 +63,13 @@ void main(void) {
         color += reflexion;
     }
 
+    #define LOG2 1.442695
+    vec3 dist = viewDir - vPosWorld;
+    float fogDistance = sqrt(dist.x*dist.x+dist.y*dist.y+dist.z*dist.z);
+    float fogAmount = 1. - exp2(-0.01 * 0.01 * fogDistance * fogDistance * LOG2);
+    fogAmount = clamp(fogAmount, 0., 1.);
+    vec3 fog = vec3(1.0,1.0,1.0);
+    color = mix(color,fog,fogAmount);
+
    gl_FragColor = vec4(color,1.0);
 }

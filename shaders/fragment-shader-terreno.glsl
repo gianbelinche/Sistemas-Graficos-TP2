@@ -36,6 +36,7 @@ uniform float h3;
 uniform float h4;
 
 //Value noise
+#define LOG2 1.442695
 
 float N21(vec2 p) {
     return fract(sin(p.x*100.+p.y*6574.)*5647.);
@@ -189,6 +190,7 @@ void main(void) {
         color+=uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
     } else if (isSky){
         vec3 sky = texture2D(cieloTex,vUv).xyz;
+        
         color = sky;
     } else {
         color=uAmbientColor;
@@ -266,5 +268,12 @@ void main(void) {
         vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
         color+=uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
     }
+    #define LOG2 1.442695
+    vec3 dist = viewDir - vWorldPosition;
+    float fogDistance = sqrt(dist.x*dist.x+dist.y*dist.y+dist.z*dist.z);
+    float fogAmount = 1. - exp2(-0.01 * 0.01 * fogDistance * fogDistance * LOG2);
+    fogAmount = clamp(fogAmount, 0., 1.);
+    vec3 fog = vec3(1.0,1.0,1.0);
+    color = mix(color,fog,fogAmount);
     gl_FragColor = vec4(color,1.0);
 }
