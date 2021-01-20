@@ -66,7 +66,9 @@ class Helicoptero{
         this.posicion = [0,0,0];
         this.rot_aro = 0;
     }
-
+    set_posicion_camara(pos){
+        this.contenedor_helicoptero.set_posicion_camara(pos);
+    }
     mover(pos){
         this.contenedor_helicoptero.mover(pos);
         this.rotarAroHelice(pos[0]);

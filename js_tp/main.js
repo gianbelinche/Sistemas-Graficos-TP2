@@ -181,6 +181,7 @@ function control(){
     helicoptero.contraerHelices();
     helicoptero.rotarHelices();
     terreno.rotar(roty,[0.0,1.0,0.0]);
+    console.log(p.x)
     terreno.set_posicion([p.x - p.x % 10,0.0,p.z - p.z % 10]);
     terreno.rotar(-roty,[0.0,1.0,0.0]);
     
@@ -205,6 +206,28 @@ function control(){
     vec3.transformMat4(pos_hel,pos_hel,matriz_hel);
     var x = 0;
     var z = 8;
+    if (p.x > 0 && (pos_hel[0] - pos_hel[0] % 10) > 0){
+        x = 0.1;
+    }
+    if (p.x < 0 && (pos_hel[0] - pos_hel[0] % 10) > 0){
+        x = 3.3;
+    }
+    if (p.x > 0 && (pos_hel[0] - pos_hel[0] % 10) < 0){
+        x = -3.3;
+    }
+    if (p.x > 0 & (pos_hel[2] - pos_hel[2] % 10)>0){
+        z += 3.3;
+    }    
+    if (p.x > 0 && (pos_hel[2] - pos_hel[2] % 10) < 0){
+        z += -3.33;
+    }
+    if (p.x < 0 & (pos_hel[2] - pos_hel[2] % 10)>0){
+        z += 3.3;
+    }    
+    if (p.x < 0 && (pos_hel[2] - pos_hel[2] % 10) < 0){
+        z += -3.33;
+    }
+    /*
     if ((pos_hel[0] - pos_hel[0] % 10) < 0){
         x = -0.1;
     }
@@ -213,8 +236,8 @@ function control(){
     }
     if ((pos_hel[2] - pos_hel[2] % 10) > 0){
         z += 3.3;
-    }
-    console.log(pos_hel[2]);
+    }*/
+    //console.log(pos_hel[2]);
     plataforma.set_posicion([x,z,0]);
     var pos_camara = vec3.create();
     var matriz_conjunta = mat4.create();
