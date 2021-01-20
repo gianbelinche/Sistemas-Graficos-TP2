@@ -60,10 +60,6 @@ Inicia el menu que controla las variables modo y Sonido
 function initMenu(){
     var gui = new dat.GUI({"hideable" : false});
     gui.add(datos,"Sonido",["Activado","Desactivado"]);
-    gui.add(datos,"h1",0,1,0.01);
-    gui.add(datos,"h2",0,1,0.01);
-    gui.add(datos,"h3",0,1,0.01);
-    gui.add(datos,"h4",0,0.05,0.0005);
 }
 function setupModelo(){
     camara_orbital = new CamaraFP("orbital");
@@ -139,10 +135,10 @@ $('body').on("keydown",function(event){
     if (event.keyCode==72){
         helicoptero.modificarContraccionHelices();
     }
-    if (event.keyCode == 109){
+    if (event.keyCode == 107){
         camara.disminuirZoom(0.1);
     }
-    if (event.keyCode == 107){
+    if (event.keyCode == 109){
         camara.aumentarZoom(0.1);
     }
         
