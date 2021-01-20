@@ -18,7 +18,7 @@ function ControlHelicoptero(){
 
 
     var maxSpeed=0.05;
-    var maxAltitude=300;
+    var maxAltitude=5;
     var minAltitude=-21.4;
 
     var positionX=0;

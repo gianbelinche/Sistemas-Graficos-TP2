@@ -45,7 +45,7 @@ class CamaraFP{
         }
     }
     aumentarZoom(zoom){
-        if (this.zoom + zoom <= 4.0){
+        if (this.zoom + zoom <= 1.8){
             this.zoom += zoom;
             var mouse = this.isMouseDown;
             this.isMouseDown = true;
