@@ -408,7 +408,7 @@ function crear_rotor(){
     return rotor;
 }
 
-function crear_plano(latitudeBands,longitudeBands,lado){
+function crear_plano(latitudeBands,longitudeBands,lado,zoom){
     var normal_buffer = [];
     var position_buffer = [];
     var texture_coord_buffer = [];
@@ -425,8 +425,8 @@ function crear_plano(latitudeBands,longitudeBands,lado){
             normal_buffer.push(1);
             normal_buffer.push(0);
 
-            texture_coord_buffer.push(u / 5);
-            texture_coord_buffer.push(v / 5);
+            texture_coord_buffer.push(u / zoom);
+            texture_coord_buffer.push(v / zoom);
             
             position_buffer.push(x);
             position_buffer.push(y);
@@ -481,7 +481,7 @@ function crear_plano(latitudeBands,longitudeBands,lado){
 Creacion del terreno (sin utilizar superficies de barrido)
 */
 function crear_terreno(latitudeBands,longitudeBands,lado){
-    var terreno = crear_plano(latitudeBands,longitudeBands,lado);
+    var terreno = crear_plano(latitudeBands,longitudeBands,lado,5);
     terreno.initTexture("img/tibet.png","uSampler");
     terreno.initTexture("texturas/pasto.jpg","pastoTex");
     terreno.initTexture("texturas/arena.jpg","arenaTex");
@@ -501,7 +501,7 @@ function crear_terreno(latitudeBands,longitudeBands,lado){
 }
 
 function crear_agua(latitudeBands,longitudeBands,lado){
-    var agua = crear_plano(latitudeBands,longitudeBands,lado);
+    var agua = crear_plano(latitudeBands,longitudeBands,lado,1);
     agua.initTexture("texturas/agua.jpg","aguaTex");
     agua.agregarUniformBool("isWater",true);
     agua.agregarUniformBool("isSky",false);
@@ -664,8 +664,8 @@ function crear_cielo(latitudeBands, longitudeBands,radio){
 }
 
 function crear_titulo(latitudeBands,longitudeBands,lado){
-    var titulo = crear_plano(latitudeBands,longitudeBands,lado);
-    titulo.initTexture("texturas/agua.jpg","cieloTex");
+    var titulo = crear_plano(latitudeBands,longitudeBands,lado,1);
+    titulo.initTexture("texturas/wood1.png","cieloTex");
     titulo.agregarUniformBool("isWater",false);
     titulo.agregarUniformBool("isSky",false);
     titulo.agregarUniformBool("isTitle",true);
