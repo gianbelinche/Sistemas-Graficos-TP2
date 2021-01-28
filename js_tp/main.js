@@ -1,8 +1,7 @@
 import {CamaraFP} from "./camarafp.js";
 import {ControlHelicoptero} from "./controlHelicoptero.js";
 import {Helicoptero} from "./helicoptero.js";
-import {crear_terreno,crear_plataforma} from "./Modelo.js";
-import { Objeto3D } from "./objeto3d.js";
+import {crear_terreno,crear_plataforma,crear_titulo} from "./Modelo.js";
 import {loadShaders,initShaders,setupVertexShaderMatrix,setupVertexShaderMatrix2,setupWebGL,glProgram_terreno,glProgram_helicoptero} from "./webglInicio.js";
 var sound = document.createElement("audio");
 sound.src = "/sound/helicoptero2.mp3";
@@ -12,15 +11,11 @@ sound.style.display = "none";
 sound.loop = true;
 document.body.appendChild(sound);
 sound.play();
-var Sonido = "Activado";
-function crear_parametros(sonido,h1,h2,h3,h4){
+var Sonido = "Desactivado";
+function crear_parametros(sonido){
     this.Sonido = sonido;
-    this.h1 = h1;
-    this.h2 = h2;
-    this.h3 = h3;
-    this.h4 = h4;
 }
-var datos = new crear_parametros(Sonido,0.5,0.3,0.0,0.0);
+var datos = new crear_parametros(Sonido);
 var mat4=glMatrix.mat4;
 var vec3=glMatrix.vec3;
 var mat3=glMatrix.mat3;
@@ -49,6 +44,8 @@ var camara_extra = null;
 var helicoptero = null;
 var terreno = null;
 var plataforma = null;
+var titulo = null;
+var titulo_encendido = true;
 var longitud = 255; //Mas grande que esto empieza a deformarse la textura
 var latitud = 255;
 var lado = 100;
@@ -67,7 +64,7 @@ function setupModelo(){
     camara_lateral = new CamaraFP("lateral");
     camara_superior = new CamaraFP("superior");
     camara_extra = new CamaraFP("extra");
-    camara = camara_extra;
+    camara = camara_superior;
     helicoptero = new Helicoptero();
     plataforma = crear_plataforma();
     plataforma.mover([0,8,0]);
@@ -81,7 +78,10 @@ function setupModelo(){
     helicoptero.set_program(glProgram_helicoptero);
     plataforma.set_program(glProgram_helicoptero);
     terreno = crear_terreno(latitud,longitud,lado);
+    titulo = crear_titulo(latitud,longitud,lado);
+    titulo.mover([0,-30,0]);
     terreno.set_program(glProgram_terreno);
+    titulo.set_program(glProgram_terreno);
     //terreno.agregarHijo(plataforma);
 }
             
@@ -117,29 +117,37 @@ document.addEventListener('wheel', zoom);
 
 $('body').on("keydown",function(event){
 
-    if (event.keyCode==49 || event.keyCode==97){
-        camara = camara_orbital;
-    }
-    if (event.keyCode==50 || event.keyCode==98){
-        camara = camara_trasera;
-    }
-    if (event.keyCode==51 || event.keyCode==99){
-        camara = camara_lateral;
-    }
-    if (event.keyCode==52 || event.keyCode==100){
-        camara = camara_superior;
-    }
-    if (event.keyCode==53 || event.keyCode==101){
-        camara = camara_extra;
-    }
-    if (event.keyCode==72){
-        helicoptero.modificarContraccionHelices();
-    }
-    if (event.keyCode == 107){
-        camara.disminuirZoom(0.1);
-    }
-    if (event.keyCode == 109){
-        camara.aumentarZoom(0.1);
+    if (titulo_encendido){
+        if (event.keyCode == 13){
+            titulo_encendido = false;
+            camara = camara_extra;
+            datos.Sonido = "Activado";
+        }
+    } else {
+        if (event.keyCode==49 || event.keyCode==97){
+            camara = camara_orbital;
+        }
+        if (event.keyCode==50 || event.keyCode==98){
+            camara = camara_trasera;
+        }
+        if (event.keyCode==51 || event.keyCode==99){
+            camara = camara_lateral;
+        }
+        if (event.keyCode==52 || event.keyCode==100){
+            camara = camara_superior;
+        }
+        if (event.keyCode==53 || event.keyCode==101){
+            camara = camara_extra;
+        }
+        if (event.keyCode==72){
+            helicoptero.modificarContraccionHelices();
+        }
+        if (event.keyCode == 107){
+            camara.disminuirZoom(0.1);
+        }
+        if (event.keyCode == 109){
+            camara.aumentarZoom(0.1);
+        } 
     }
         
 });
@@ -151,14 +159,19 @@ function drawScene(){
 
     // Se habilita el color de borrado para la pantalla (Color Buffer) y otros buffers
     gl.clearColor(0.0,0.0,0.0,1);             
-    
-    gl.useProgram(glProgram_helicoptero);
-    setupVertexShaderMatrix2();
-    helicoptero.dibujar(mat4.create());
-    plataforma.dibujar(mat4.create());
-    gl.useProgram(glProgram_terreno);
-    setupVertexShaderMatrix();
-    terreno.dibujar(mat4.create());
+    if (titulo_encendido){
+        gl.useProgram(glProgram_terreno);
+        setupVertexShaderMatrix();
+        titulo.dibujar(mat4.create());
+    } else {
+        gl.useProgram(glProgram_helicoptero);
+        setupVertexShaderMatrix2();
+        helicoptero.dibujar(mat4.create());
+        plataforma.dibujar(mat4.create());
+        gl.useProgram(glProgram_terreno);
+        setupVertexShaderMatrix();
+        terreno.dibujar(mat4.create());
+    }
 }
 /*
 Realiza el control de los distintos objetos de la escena para la proxima iteracion
@@ -309,4 +322,4 @@ $(document).ready(function(){
     loadShaders();
 })
 
-export {initWebGL,gl,canvas,projMatrix,normalMatrix,mat4,viewMatrix,mat3,matriz_model_terreno,time,matriz_model,terreno,datos};
+export {initWebGL,gl,canvas,projMatrix,normalMatrix,mat4,viewMatrix,mat3,matriz_model_terreno,time,matriz_model,terreno,datos,titulo_encendido};

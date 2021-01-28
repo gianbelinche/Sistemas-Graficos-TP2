@@ -1,3 +1,4 @@
+import {titulo_encendido} from "./main.js";
 //Se hicieron leves modificaciones al codigo provisto para ajustarlo al modelo planteado
 
 function ControlHelicoptero(){
@@ -39,40 +40,42 @@ function ControlHelicoptero(){
 
 
     document.body.onkeydown=function(e){
-        switch(e.key){
-            case "ArrowUp":
-            case "w":
-            case "W":    
-                xArrow=1;
-                break;
-            case "ArrowDown":
-            case "s":  
-            case "S":  
-                xArrow=-1;
-                break;       
-
-            case "ArrowLeft":
-            case "a":  
-            case "A": 
-                zArrow=1;
-                break;                                
-            case "ArrowRight":
-            case "d":
-            case "D":    
-                zArrow=-1;
-                break;
-
-            case "PageUp":
-            case "q":
-            case "Q":    
-                yArrow=1;
-                break;                
-            case "PageDown":
-            case "e":
-            case "E":    
-                yArrow=-1;
-                break;
-
+        if (! titulo_encendido){
+            switch(e.key){
+                case "ArrowUp":
+                case "w":
+                case "W":    
+                    xArrow=1;
+                    break;
+                case "ArrowDown":
+                case "s":  
+                case "S":  
+                    xArrow=-1;
+                    break;       
+    
+                case "ArrowLeft":
+                case "a":  
+                case "A": 
+                    zArrow=1;
+                    break;                                
+                case "ArrowRight":
+                case "d":
+                case "D":    
+                    zArrow=-1;
+                    break;
+    
+                case "PageUp":
+                case "q":
+                case "Q":    
+                    yArrow=1;
+                    break;                
+                case "PageDown":
+                case "e":
+                case "E":    
+                    yArrow=-1;
+                    break;
+    
+            }
         }
     };
 

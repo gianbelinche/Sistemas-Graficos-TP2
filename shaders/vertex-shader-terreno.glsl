@@ -16,6 +16,7 @@ uniform vec2 traslacionTextura;
 uniform float time;                 // tiempo en segundos
 uniform bool isWater;
 uniform bool isSky;
+uniform bool isTitle;
 
 uniform sampler2D uSampler;         // sampler de textura de la tierra
 uniform sampler2D pastoTex;
@@ -183,7 +184,7 @@ void main(void) {
         vec3 tan1=(gradV1+gradV2)/2.0;
         vec3 tan2=(gradU1+gradU2)/2.0;
         vNormal=cross(tan1,tan2);
-    } else if (isSky){
+    } else if (isSky || isTitle){
         vec4 worldPos = uMMatrix*vec4(position, 1.0);
         gl_Position = uPMatrix*uVMatrix*worldPos;
         vWorldPosition=worldPos.xyz;

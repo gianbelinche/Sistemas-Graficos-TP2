@@ -15,6 +15,7 @@ uniform vec3 uLightPosition2;        // posición de la luz
 
 uniform bool isWater;          
 uniform bool isSky;
+uniform bool isTitle;
 
 uniform vec3 viewDir;
 
@@ -188,7 +189,7 @@ void main(void) {
 
         vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
         color+=uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
-    } else if (isSky){
+    } else if (isSky || isTitle){
         vec3 sky = texture2D(cieloTex,vUv).xyz;
         
         color = sky;
@@ -268,13 +269,16 @@ void main(void) {
         vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
         color+=uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
     }
-    #define LOG2 1.442695
-    vec3 dist = viewDir - vWorldPosition;
-    float fogDistance = sqrt(dist.x*dist.x+dist.y*dist.y+dist.z*dist.z);
-    //float fogAmount = 1. - exp2(-0.01 * 0.01 * fogDistance * fogDistance * LOG2);
-    float fogAmount = smoothstep(15.0, 90.0, fogDistance);
-    fogAmount = clamp(fogAmount, 0., 1.);
-    vec3 fog = vec3(220.0/255.0,1.0,1.0);
-    color = mix(color,fog,fogAmount);
+    if (!isTitle){
+        #define LOG2 1.442695
+        vec3 dist = viewDir - vWorldPosition;
+        float fogDistance = sqrt(dist.x*dist.x+dist.y*dist.y+dist.z*dist.z);
+        //float fogAmount = 1. - exp2(-0.01 * 0.01 * fogDistance * fogDistance * LOG2);
+        float fogAmount = smoothstep(15.0, 90.0, fogDistance);
+        fogAmount = clamp(fogAmount, 0., 1.);
+        vec3 fog = vec3(220.0/255.0,1.0,1.0);
+        color = mix(color,fog,fogAmount);
+    }
+    
     gl_FragColor = vec4(color,1.0);
 }

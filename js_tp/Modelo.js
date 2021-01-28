@@ -491,6 +491,7 @@ function crear_terreno(latitudeBands,longitudeBands,lado){
     terreno.initTexture("texturas/tierra.jpg","tierraTex");
     terreno.agregarUniformBool("isWater",false);
     terreno.agregarUniformBool("isSky",false);
+    terreno.agregarUniformBool("isTitle",false);
     var agua = crear_agua(latitudeBands,longitudeBands,lado);
     var cielo = crear_cielo(latitudeBands,longitudeBands,lado / 2);
     terreno.agregarHijo(agua);
@@ -504,6 +505,7 @@ function crear_agua(latitudeBands,longitudeBands,lado){
     agua.initTexture("texturas/agua.jpg","aguaTex");
     agua.agregarUniformBool("isWater",true);
     agua.agregarUniformBool("isSky",false);
+    agua.agregarUniformBool("isTitle",false);
     return agua;
 }
 /*
@@ -657,6 +659,17 @@ function crear_cielo(latitudeBands, longitudeBands,radio){
     cielo.initTexture("texturas/cielo1.jpg","CieloTex");
     cielo.agregarUniformBool("isWater",false);
     cielo.agregarUniformBool("isSky",true);
+    cielo.agregarUniformBool("isTitle",false);
     return cielo;
 }
-export {crear_cabina,crear_tren,crear_cola,crear_rotor,crear_terreno,crear_plataforma};
+
+function crear_titulo(latitudeBands,longitudeBands,lado){
+    var titulo = crear_plano(latitudeBands,longitudeBands,lado);
+    titulo.initTexture("texturas/agua.jpg","cieloTex");
+    titulo.agregarUniformBool("isWater",false);
+    titulo.agregarUniformBool("isSky",false);
+    titulo.agregarUniformBool("isTitle",true);
+    return titulo;
+
+}
+export {crear_cabina,crear_tren,crear_cola,crear_rotor,crear_terreno,crear_plataforma,crear_titulo};
