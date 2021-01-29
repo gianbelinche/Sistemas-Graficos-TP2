@@ -79,8 +79,10 @@ function setupModelo(){
     plataforma.set_program(glProgram_helicoptero);
     terreno = crear_terreno(latitud,longitud,lado);
     titulo = crear_titulo(latitud,longitud,lado);
+    titulo.rotar(Math.PI,[0,1,0]);
     titulo.mover([0,-30,0]);
     titulo.escalar([0.5,1,1.0]);
+    titulo.rotar(Math.PI,[1,0,0]);
     terreno.set_program(glProgram_terreno);
     titulo.set_program(glProgram_terreno);
     //terreno.agregarHijo(plataforma);
