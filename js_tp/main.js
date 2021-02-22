@@ -221,6 +221,15 @@ function control(){
     var matriz_camara = camara.getMatrizModelado();
     var pos_hel = vec3.create();
     vec3.transformMat4(pos_hel,pos_hel,matriz_hel);
+    var x = 0;
+    var z = 8;
+    if (pos_hel[2] < -10){
+        z += -3;
+    }
+    if (pos_hel[2] > 10){
+        z += 3;
+    }
+    plataforma.set_posicion([x,z,0]);
     /*var x = 0;
     var z = 8;
     if (p.x > 0 && (pos_hel[0] - pos_hel[0] % 10) > 0){
@@ -254,7 +263,6 @@ function control(){
     if ((pos_hel[2] - pos_hel[2] % 10) > 0){
         z += 3.3;
     }*/
-    //console.log(pos_hel[2]);
     //plataforma.set_posicion([x,z,0]);
     var pos_camara = vec3.create();
     var matriz_conjunta = mat4.create();
