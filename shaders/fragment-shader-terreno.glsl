@@ -171,7 +171,9 @@ float cnoise(vec3 P)
     return 2.2 * n_xyz;
 }
 
-
+float gauss(float x){
+    return pow(2.718281828,pow(-x,2.0) / (2.0));
+}
 void main(void) {
     vec3 color = vec3(0.0,0.0,0.0);
     if (isWater){
@@ -183,8 +185,8 @@ void main(void) {
         color += agua;
         vec3 lightDirectionSpecular =  normalize(uLightPosition - vWorldPosition.xyz);
         vec3 reflectDir = reflect(-lightDirectionSpecular, normalize(vNormal));
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 1.0);
-        vec3 specular = 0.02 * spec * uDirectionalColor;
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 2.0);
+        vec3 specular = 0.0001 * spec * uDirectionalColor;
         color += specular;
 
         vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
@@ -267,7 +269,7 @@ void main(void) {
         color+=uDirectionalColor2*max(dot(normalize(vNormal),lightDirection2), 0.0) *0.15;
 
         vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
-        color+=uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
+        color+=uDirectionalColor*gauss(dot(normalize(vNormal),lightDirection)) *0.05;
     }
     if (!isTitle){
         #define LOG2 1.442695

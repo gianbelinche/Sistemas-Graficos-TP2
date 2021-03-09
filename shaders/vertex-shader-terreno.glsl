@@ -40,7 +40,7 @@ uniform float h_3;
 // constantes
 
 const float PI=3.141592653;
-const float epsilon=0.01;
+const float epsilon=0.00001;
 
 const float amplitud=50.0;
 // Perlin Noise						
@@ -140,11 +140,12 @@ float cnoise(vec3 P)
 }
 
 float crear_olas(vec3 position){
-    float noise1=cnoise(position*8.21+23.13);
-    float noise2=cnoise(position*11.79+9.47);
+    vec3 position_ = position / 2.0;
+    float noise1=cnoise(position_*8.21+23.13);
+    float noise2=cnoise(position_*11.79+9.47);
     float mask = mix(noise1,noise2,0.5);
     smoothstep(-0.1,0.1,mask);
-    return mask;
+    return mask * 0.5;
 
 }
 void main(void) {
