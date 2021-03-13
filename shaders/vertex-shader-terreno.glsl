@@ -70,6 +70,9 @@ float multisample(sampler2D texture,vec2 coord){
 
     return sum/totalWeight;
 }
+
+
+
 // Perlin Noise						
                     
 vec3 mod289(vec3 x)
@@ -175,13 +178,31 @@ float crear_olas(vec3 position){
     return mask * 0.5;
 
 }
+float multisample_olas(vec3 position){
+    float sum=0.0;
+    float totalWeight;
+    float pixelDistance=(1.0/textureSize);
+
+    for (int i=-samplingRange;i<=samplingRange;i++){
+        for (int j=-samplingRange;j<=samplingRange;j++){
+
+            float weight=1.0/(1.0+sqrt(pow(float(j),2.0)+pow(float(i),2.0)));
+            totalWeight+=weight;
+
+            vec3 uv=position+vec3(float(i),float(j),0.0)*pixelDistance*2.0;
+            sum+=weight*crear_olas(uv);
+        }
+    }
+
+    return sum/totalWeight;
+}
 void main(void) {
             
     vec3 position = aPosition;		
     vec3 normal = aNormal;	
     vec2 uv = aUv;
     if (isWater){
-        float olas = crear_olas(vec3(position.xz,time/8.0));
+        float olas = multisample_olas(vec3(position.xz,time/8.0));
         position.y += olas;
 
 
@@ -191,11 +212,8 @@ void main(void) {
         vWorldPosition=worldPos.xyz;
         
 
-        float masX = crear_olas(vec3(position.x + epsilon,position.z,time/8.0));
-        float masZ = crear_olas(vec3(position.x,position.z + epsilon,time/8.0)); 
-
-        float menosX = crear_olas(vec3(position.x - epsilon,position.z,time/8.0));  
-        float menosZ = crear_olas(vec3(position.x,position.z - epsilon,time/8.0)); 
+        float masX = multisample_olas(vec3(position.x + epsilon,position.z,time/8.0));
+        float masZ = multisample_olas(vec3(position.x,position.z + epsilon,time/8.0)); 
 
         float angU=atan((masX-olas),epsilon);
         float angV=atan((masZ-olas),epsilon);
@@ -203,15 +221,7 @@ void main(void) {
         vec3 gradU1=vec3(cos(angU),sin(angU),0.0);
         vec3 gradV1=vec3(0.0      ,sin(angV),cos(angV));
         
-        angU=atan((olas-menosX),epsilon);
-        angV=atan((olas-menosZ),epsilon);
-
-        vec3 gradU2=vec3(cos(angU),sin(angU),0.0);
-        vec3 gradV2=vec3(0.0      ,sin(angV),cos(angV));
-
-        vec3 tan1=(gradV1+gradV2)/2.0;
-        vec3 tan2=(gradU1+gradU2)/2.0;
-        vNormal=cross(tan1,tan2);
+        vNormal=cross(gradU1,gradV1);
     } else if (isSky || isTitle){
         vec4 worldPos = uMMatrix*vec4(position, 1.0);
         gl_Position = uPMatrix*uVMatrix*worldPos;

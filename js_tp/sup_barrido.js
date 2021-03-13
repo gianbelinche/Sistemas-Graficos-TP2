@@ -33,7 +33,7 @@ function generarSuperficie(forma,recorrido,normal){
             positionBuffer.push(pos[1]);
             positionBuffer.push(pos[2]);
 
-            var nrm= [normal[i][0],0.0,normal[i][1]];
+            var nrm= [normal[i][0],normal[i][1],0.0];
             vec3.transformMat4(nrm,nrm,matriz_norm);
 
 

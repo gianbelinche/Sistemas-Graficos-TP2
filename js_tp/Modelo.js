@@ -36,7 +36,9 @@ function crear_cabina(){
                                         0,0,0,0,
                                         0,0,0,0,
                                         0,0,1,1);
-    var recorrido = [[m_tapa_1,m1,m1,m2,m3,m4,m5,m5,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
+    var m_normales = mat4.create();
+    mat4.rotate(m_normales,m_normales,Math.PI,[0.0,0.0,1.0]);                                    
+    var recorrido = [[m_tapa_1,m1,m1,m2,m3,m4,m5,m5,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,m_normales,m_normales,m_normales,m_normales,m_normales,m_tapa_2_norm,m_tapa_2_norm]];
     //var recorrido = [[m_tapa_1,m1,m1,m2,m3,m4,m5,m5,m_tapa_2],[m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm]];
     var buffers = generarSuperficie(forma,recorrido,normal);
     var cabina = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
@@ -525,6 +527,7 @@ function crear_terreno(latitudeBands,longitudeBands,lado){
 function crear_agua(latitudeBands,longitudeBands,lado){
     var agua = crear_plano(latitudeBands,longitudeBands,lado,1);
     agua.initTexture("texturas/agua.jpg","aguaTex");
+    agua.initTexture("texturas/cielo1.jpg","reflexionAgua");
     agua.agregarUniformBool("isWater",true);
     agua.agregarUniformBool("isSky",false);
     agua.agregarUniformBool("isTitle",false);
@@ -566,8 +569,13 @@ function crear_terreno(latitud,longitud,lado){
     return terreno;
 }*/
 function crear_plataforma(){
-    var forma = [[-0.5,-0.5],[0.5,-0.5],[0.5,0.5],[-0.5,0.5],[-0.5,-0.5]];
-    var normal = [[0.0,-1.0],[1.0,0.0],[0.0,1.0],[-1.0,0.0],[-1.0,0.0]];
+    //var forma = [[-0.5,-0.5],[0.5,-0.5],[0.5,0.5],[-0.5,0.5],[-0.5,-0.5]];
+    //var normal = [[0.0,-1.0],[1.0,0.0],[0.0,1.0],[-1.0,0.0],[-1.0,0.0]];
+    var puntos = curvas_bezier([[-0.5,-0.5],[-0.2,-0.5],[0.2,-0.5],[0.5,-0.5],[0.5,-0.5],[0.5,-0.2],[0.5,0.2],[0.5,0.5],[0.5,0.5],[0.2,0.5],[-0.2,0.5],[-0.5,0.5],[-0.5,0.5],[-0.5,0.2],[-0.5,-0.2],[-0.5,-0.5]],1000);
+    var forma = puntos[0];
+    var normal = puntos[1];
+    forma.push(forma[0]);
+    normal.push(normal[0]);
     var m1 = mat4.create();
     var m2 = mat4.create();
     mat4.translate(m2,m2,[0.0,0.0,0.1]);

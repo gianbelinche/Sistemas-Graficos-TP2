@@ -170,15 +170,15 @@ function drawScene(){
     if (titulo_encendido){
         gl.useProgram(glProgram_terreno);
         setupVertexShaderMatrix();
-        titulo.dibujar(mat4.create());
+        titulo.dibujar(mat4.create(),mat4.create());
     } else {
         gl.useProgram(glProgram_helicoptero);
         setupVertexShaderMatrix2();
-        helicoptero.dibujar(mat4.create());
-        plataforma.dibujar(mat4.create());
+        helicoptero.dibujar(mat4.create(),mat4.create());
+        plataforma.dibujar(mat4.create(),mat4.create());
         gl.useProgram(glProgram_terreno);
         setupVertexShaderMatrix();
-        terreno.dibujar(mat4.create());
+        terreno.dibujar(mat4.create(),mat4.create());
     }
 }
 /*

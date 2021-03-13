@@ -10,6 +10,16 @@ function bezier(t,puntos_control){
     var y = puntos_control[0][1] * b0 + puntos_control[1][1] * b1 + puntos_control[2][1] * b2 + puntos_control[3][1] * b3;
     return [x,y];
 }
+
+function derivada(t,puntos_control){
+    var b0 = -3 * (1-t) * (1-t);
+    var b1 = 3 * (1-t) * (1-t) - 6 * (1-t) * t;
+    var b2 = 6 * (1-t) * t- 3 *t *t;
+    var b3 =3 * t *t;
+    var x = puntos_control[0][0] * b0 + puntos_control[1][0] * b1 + puntos_control[2][0] * b2 + puntos_control[3][0] * b3;
+    var y = puntos_control[0][1] * b0 + puntos_control[1][1] * b1 + puntos_control[2][1] * b2 + puntos_control[3][1] * b3;
+    return [x,y];
+}
 /*
 Devuelve los puntos discretizados de una curva de bezier con 4 puntos de control.
 */
@@ -22,18 +32,16 @@ function curvas_bezier_aux(puntos_control,cant_disc,puntos){
 }
 
 function normales(puntos_control,cant_disc,normal){
-    var epsilon = 0.0001;
+    var epsilon = 0.0001 / cant_disc;
     for (var t = 0.0; t < 1.0; t += 1.0 /cant_disc){
         var punto = bezier(t,puntos_control);
         var sig = bezier(t+epsilon,puntos_control);
-        var ant = bezier(t-epsilon,puntos_control);
         var ang1=Math.atan2(sig[1] - punto[1],sig[0] - punto[0]);
-        var ang2=Math.atan2(punto[1] - ant[1],punto[0] - ant[0]);
         var grad1=[Math.cos(ang1),Math.sin(ang1)];
-        var grad2=[Math.cos(ang2),Math.sin(ang2)];
-        var tan = (grad1 + grad2) / 2;
         var tan = grad1;
-        var nrm = [Math.cos(-Math.PI / 2) * tan[0] - Math.sin(-Math.PI / 2) * tan[1],Math.sin(-Math.PI / 2) * tan[0] + Math.cos(-Math.PI / 2) * tan[1]];
+
+        var tan = derivada(t,puntos_control);
+        var nrm = [Math.cos(Math.PI / 2) * tan[0] - Math.sin(Math.PI / 2) * tan[1],Math.sin(Math.PI / 2) * tan[0] + Math.cos(Math.PI / 2) * tan[1]];
         normal.push(nrm);
     }
     return normal;

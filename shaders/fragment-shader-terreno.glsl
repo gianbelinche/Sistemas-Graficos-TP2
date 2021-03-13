@@ -28,6 +28,7 @@ uniform sampler2D arenaTex;
 uniform sampler2D rocaTex;
 uniform sampler2D aguaTex;
 uniform sampler2D cieloTex;
+uniform sampler2D reflexionAgua;
 
 
 
@@ -183,11 +184,26 @@ void main(void) {
         vec3 agua3=texture2D(aguaTex,vUv*2.11).xyz;
         vec3 agua=mix(mix(agua1,agua2,0.5),agua3,0.3);
         color += agua;
-        vec3 lightDirectionSpecular =  normalize(uLightPosition - vWorldPosition.xyz);
-        vec3 reflectDir = reflect(-lightDirectionSpecular, normalize(vNormal));
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 2.0);
-        vec3 specular = 0.0001 * spec * uDirectionalColor;
-        color += specular;
+        //vec3 lightDirectionSpecular =  normalize(uLightPosition - vWorldPosition.xyz);
+        //vec3 reflectDir = reflect(-lightDirectionSpecular, normalize(vNormal));
+        //float spec = pow(max(dot(viewDir, reflectDir), 0.0), 2.0);
+        //vec3 specular = 0.0001 * spec * uDirectionalColor;
+        //color += specular;
+        vec3 worldNormal = normalize(vNormal);
+        vec3 eyeToSurfaceDir = normalize(vWorldPosition - viewDir);
+        vec3 direction = reflect(eyeToSurfaceDir,worldNormal);
+        float m = 2. * sqrt(
+            pow( direction.x, 2. ) +
+            pow( direction.y, 2. ) +
+            pow( direction.z + 1., 2. )
+        );
+
+        float r = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        float alfa = atan(direction.y , direction.x);
+        float beta = acos(direction.z/r);
+        //vec3 cabina_reflexion = texture2D(cabinaReflexionTex,vec2(((pi/2.0)-beta)/pi,alfa/(2.0*pi))).xyz;
+        vec3 reflexion = texture2D(reflexionAgua,direction.yx / m + .5).xyz;
+        color += reflexion * 0.25;
 
         vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
         color+=uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;

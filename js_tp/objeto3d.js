@@ -7,6 +7,7 @@ class Objeto3D {
         this.normalBuffer = normalBuffer;
         this.color = null;
         this.matriz_modelado = mat4.create();
+        this.matriz_normal = mat4.create();
         this.hijos = [];
         this.posicion = [0.0,0.0,0.0];
         this.texture_amount = 0;
@@ -82,6 +83,7 @@ class Objeto3D {
     */
     rotar(angulo,eje){
         mat4.rotate(this.matriz_modelado,this.matriz_modelado,angulo,eje);
+        mat4.rotate(this.matriz_normal,this.matriz_normal,angulo,eje);
     }
     /*
     Realiza un escalado del objeto
@@ -96,7 +98,7 @@ class Objeto3D {
     /*
     Dibuja el objeto en pantalla
     */
-    dibujar(matriz){
+    dibujar(matriz,normal){
         gl.useProgram(this.Program);
         var m = mat4.create();
         mat4.multiply(m,matriz,this.matriz_modelado);
@@ -106,9 +108,10 @@ class Objeto3D {
 
         var normalMatrixUniform  = gl.getUniformLocation(this.Program, "uNMatrix");
         var normalMatrix = mat4.create();
-        mat3.fromMat4(normalMatrix,m); // normalMatrix= (inversa(traspuesta(matrizModelado)));
-        mat3.invert(normalMatrix, normalMatrix);
-        mat3.transpose(normalMatrix,normalMatrix);
+        //mat3.fromMat4(normalMatrix,m); // normalMatrix= (inversa(traspuesta(matrizModelado)));
+        //mat3.invert(normalMatrix, normalMatrix);
+        //mat3.transpose(normalMatrix,normalMatrix);
+        mat4.multiply(normalMatrix,normal,this.matriz_normal);
         gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
 
         if (this.color){
@@ -161,7 +164,7 @@ class Objeto3D {
             gl.drawElements(gl.TRIANGLES, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
         }
         for (var i = 0;i < this.hijos.length; i++){
-            this.hijos[i].dibujar(m);
+            this.hijos[i].dibujar(m,normalMatrix);
         }
     }
 

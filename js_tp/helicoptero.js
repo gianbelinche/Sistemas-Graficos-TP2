@@ -111,8 +111,8 @@ class Helicoptero{
         this.rot_aro += rotacion;
     }
 
-    dibujar(matriz){
-        this.contenedor_helicoptero.dibujar(matriz);
+    dibujar(matriz,normal){
+        this.contenedor_helicoptero.dibujar(matriz,normal);
     }
     /*
     Realiza la rotacion sobre el eje y del helicoptero
