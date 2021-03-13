@@ -7,7 +7,7 @@ Se plantea definiendo para las posiciones como simplemete la posicion de la form
 Y para las normales se utiliza la resta entre dos puntos consecutivos rotada luego 90º para que quede orientado de manera saliente a la superficie, luego se multiplica por la matriz de recorrido(normal)
 Finalmente se crea la malla con el algoritmo pensado para gl_TRIANGLES
 */
-function generarSuperficie(forma,recorrido){
+function generarSuperficie(forma,recorrido,normal){
     var copia_forma = forma;
     
     var positionBuffer = [];
@@ -33,27 +33,7 @@ function generarSuperficie(forma,recorrido){
             positionBuffer.push(pos[1]);
             positionBuffer.push(pos[2]);
 
-            var nrm= vec3.create();
-            var sig = i + 1;
-            if (i == columnas){
-                sig = 1;
-            }
-            var ant = i-1;
-            if (i == 0){
-                ant = columnas - 2;
-            }
-            var elem_sig = copia_forma[sig];
-            var elem_ant = copia_forma[ant];
-            
-            var ang1=Math.atan2(elem_sig[1] - elem[1],elem_sig[0] - elem[0]);
-            var ang2=Math.atan2(elem[1] - elem_ant[1],elem[0] - elem_ant[0]);
-            var grad1=[Math.cos(ang1),Math.sin(ang1),0.0];
-            var grad2=[Math.cos(ang2),Math.sin(ang2),0.0];
-            var tan = (grad1 + grad2) / 2;
-            var m = mat4.create();
-            mat4.rotate(m,m,Math.PI / 2.0,[0.0,0.0,1.0]);
-            vec3.transformMat4(nrm,grad1,m);
-
+            var nrm= [normal[i][0],0.0,normal[i][1]];
             vec3.transformMat4(nrm,nrm,matriz_norm);
 
 

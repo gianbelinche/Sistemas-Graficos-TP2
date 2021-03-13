@@ -37,12 +37,39 @@ uniform float h_1;
 uniform float h_2;
 uniform float h_3;
 
+const float cantidad_promediar = 1.0;
 // constantes
 
 const float PI=3.141592653;
-const float epsilon=0.00001;
 
-const float amplitud=50.0;
+const float amplitud=50.0; //50
+
+const int samplingRange=2; // 0 = 1 muestra,  1 = 9 muestras, 2= 25 muestras, 3 = 49 muestras
+const float textureSize = 1024.0;
+const float epsilon= 1.0 / textureSize;
+        
+// toma un promedio ponderados de muestras de una textura
+
+float multisample(sampler2D texture,vec2 coord){
+
+
+    float sum=0.0;
+    float totalWeight;
+    float pixelDistance=(1.0/textureSize);
+
+    for (int i=-samplingRange;i<=samplingRange;i++){
+        for (int j=-samplingRange;j<=samplingRange;j++){
+
+            float weight=1.0/(1.0+sqrt(pow(float(j),2.0)+pow(float(i),2.0)));
+            totalWeight+=weight;
+
+            vec2 uv=coord+vec2(float(i),float(j))*pixelDistance*2.0;
+            sum+=weight*texture2D(texture, vec2(uv.s, uv.t)).x;
+        }
+    }
+
+    return sum/totalWeight;
+}
 // Perlin Noise						
                     
 vec3 mod289(vec3 x)
@@ -191,18 +218,15 @@ void main(void) {
         vWorldPosition=worldPos.xyz;
         vNormal = aNormal;
     } else {
+
         uv.s = uv.s + traslacionTextura.y;
         uv.t = uv.t - traslacionTextura.x;
-        vec4 center = texture2D(uSampler, vec2(uv.s, uv.t));                     
-        vec4 masU = texture2D(uSampler, vec2(uv.s+epsilon, uv.t));  
-        vec4 masV = texture2D(uSampler, vec2(uv.s , uv.t +epsilon));  
-
-        vec4 menosU = texture2D(uSampler, vec2(uv.s -epsilon, uv.t));  
-        vec4 menosV = texture2D(uSampler, vec2(uv.s , uv.t -epsilon));  
-
+        float center = multisample(uSampler, vec2(uv.s, uv.t));                     
+        float masU = multisample(uSampler, vec2(uv.s+epsilon, uv.t));  
+        float masV = multisample(uSampler, vec2(uv.s, uv.t+epsilon));  
 
         // elevamos la coordenada Y
-        position.y+=center.x*amplitud;
+        position.y+=center*amplitud;
 
         vec4 worldPos = uMMatrix*vec4(position, 1.0);                        
 
@@ -225,26 +249,18 @@ void main(void) {
         
         
         
-        float angU=atan((masU.x-center.x)*amplitud,epsilon);
-        float angV=atan((masV.x-center.x)*amplitud,epsilon);
+        float angU=atan((masU-center)*amplitud,epsilon);
+        float angV=atan((masV-center)*amplitud,epsilon);
 
         // tangentes en U y en V
         vec3 gradU1=vec3(cos(angU),sin(angU),0.0);
         vec3 gradV1=vec3(0.0      ,sin(angV),cos(angV));
         
-        angU=atan((center.x-menosU.x)*amplitud,epsilon);
-        angV=atan((center.x-menosV.x)*amplitud,epsilon);
-
-        // segundo conjunto de tangentes en U y en V
-        vec3 gradU2=vec3(cos(angU),sin(angU),0.0);
-        vec3 gradV2=vec3(0.0      ,sin(angV),cos(angV));
 
 
         
         // calculo el producto vectorial
-        vec3 tan1=(gradV1+gradV2)/2.0;
-        vec3 tan2=(gradU1+gradU2)/2.0;
-        vNormal=cross(tan1,tan2);
+        vNormal=cross(gradU1,gradV1);
     }
     vUv=uv;	
 }

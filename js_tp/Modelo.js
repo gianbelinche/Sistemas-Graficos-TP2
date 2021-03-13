@@ -6,8 +6,11 @@ import {mat4,gl, terreno} from "./main.js";
 A continuacion se definiran los modelos de cada objeto utilizando superficies de barrido y/o curvas de bezier
 */
 function crear_cabina(){
-    var forma = curvas_bezier([[0.4,0.4],[0.2,0.6],[-0.2,0.6],[-0.4,-0.2],[-0.4,-0.2],[-0.2,-0.4],[0.2,-0.4],[0.4,0.4]],100);
+    var puntos = curvas_bezier([[0.4,0.4],[0.2,0.6],[-0.2,0.6],[-0.4,-0.2],[-0.4,-0.2],[-0.2,-0.4],[0.2,-0.4],[0.4,0.4]],100);
+    var forma = puntos[0];
+    var normal = puntos[1];
     forma.push(forma[0]);
+    normal.push(normal[0]);
     var m1 = mat4.create();
     mat4.translate(m1,m1,[0.0,0.0,0.1]);
     var m2 = mat4.create();
@@ -35,7 +38,7 @@ function crear_cabina(){
                                         0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m3,m4,m5,m5,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
     //var recorrido = [[m_tapa_1,m1,m1,m2,m3,m4,m5,m5,m_tapa_2],[m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm]];
-    var buffers = generarSuperficie(forma,recorrido);
+    var buffers = generarSuperficie(forma,recorrido,normal);
     var cabina = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     //cabina.set_color([245/255, 238/255, 181/255]);
     cabina.set_texture_buffer(buffers.webgl_uvs_buffer);
@@ -52,6 +55,8 @@ function crear_cabina(){
 function crear_triangulo(){
     //var forma = [[-1.0,0.2],[-1.0,-0.2],[1.0,0.0],[1.0,0.2]];
     var forma = [[-1.0,0.2],[-1.0,-0.2],[1.0,0.0],[1.0,0.2],[-1.0,0.2]];
+    //var normal = [[-1.0,0.0],[-1.0,0.2],[1.0,0.0],[0.0,1.0],[0.0,1.0]];
+    var normal = [[1.0,0.0],[1.0,0.0],[1.0,0.0],[1.0,0.0],[1.0,0.0]];
     var m1 = mat4.create();
     mat4.translate(m1,m1,[0.0,0.0,0.1]);
     var m2 = mat4.create();
@@ -69,7 +74,7 @@ function crear_triangulo(){
                                         0,0,0,0,
                                         0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
-    var buffers = generarSuperficie(forma,recorrido);
+    var buffers = generarSuperficie(forma,recorrido,normal);
     var barra = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     barra.agregarUniformBool("isCabina",false);
     barra.agregarUniformBool("usarReflexion",false);
@@ -83,8 +88,11 @@ function crear_cola_barra(){
 
 function crear_cilindro(){
     var c = 0.551915024494; //Valor optimo para un circulo de radio 1
-    var forma = curvas_bezier([[0.0,1.0],[c,1.0],[1.0,c],[1.0,0.0],[1.0,0.0],[1.0,-c],[c,-1.0],[0.0,-1.0],[0.0,-1.0],[-c,-1.0],[-1.0,-c],[-1.0,0.0],[-1.0,0.0],[-1.0,c],[-c,1.0],[0.0,1.0]],100);
+    var puntos = curvas_bezier([[0.0,1.0],[c,1.0],[1.0,c],[1.0,0.0],[1.0,0.0],[1.0,-c],[c,-1.0],[0.0,-1.0],[0.0,-1.0],[-c,-1.0],[-1.0,-c],[-1.0,0.0],[-1.0,0.0],[-1.0,c],[-c,1.0],[0.0,1.0]],100);
+    var forma = puntos[0];
+    var normal = puntos[1];
     forma.push(forma[0]);
+    normal.push(normal[0]);
     var m1 = mat4.create();
     mat4.translate(m1,m1,[0.0,0.0,0.1]);
     mat4.scale(m1,m1,[0.1,0.1,1.0]);
@@ -106,7 +114,7 @@ function crear_cilindro(){
             0,0,0,0,
             0,0,1,1);   
     var recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
-    var buffers=generarSuperficie(forma,recorrido);
+    var buffers=generarSuperficie(forma,recorrido,normal);
     var cilindro = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     cilindro.agregarUniformBool("isCabina",false);
     cilindro.agregarUniformBool("usarReflexion",false);
@@ -140,7 +148,10 @@ function crear_rotor_cilindro2(){
 }
 
 function crear_cola_ala(){
-    var forma = curvas_bezier([[-0.5,-0.5],[-0.6,-0.3],[-0.3,0.2],[-0.2,0.5],[-0.2,0.5],[-0.1,0.6],[0.4,0.6],[0.5,0.5],[0.5,0.5],[0.5,0.3],[0.4,-0.2],[0.1,-0.5],[0.1,-0.5],[0.0,-0.6],[-0.4,-0.6],[-0.5,-0.5]],100);
+    var puntos = curvas_bezier([[-0.5,-0.5],[-0.6,-0.3],[-0.3,0.2],[-0.2,0.5],[-0.2,0.5],[-0.1,0.6],[0.4,0.6],[0.5,0.5],[0.5,0.5],[0.5,0.3],[0.4,-0.2],[0.1,-0.5],[0.1,-0.5],[0.0,-0.6],[-0.4,-0.6],[-0.5,-0.5]],100);
+    var forma = puntos[0];
+    var normal = puntos[1];
+    normal.push(normal[0]);
     forma.push(forma[0]);
     var m1 = mat4.create();
     mat4.translate(m1,m1,[0.0,0.0,0.1]);
@@ -163,7 +174,7 @@ function crear_cola_ala(){
             0,0,0,0,
             0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
-    var buffers=generarSuperficie(forma,recorrido);
+    var buffers=generarSuperficie(forma,recorrido,normal);
     var triangulo = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     triangulo.agregarUniformBool("isCabina",false);
     triangulo.agregarUniformBool("usarReflexion",false);
@@ -179,7 +190,10 @@ function crear_rotor_helice(){
 
 function crear_tren_base(){
     var c = 0.551915024494; //Valor optimo para un circulo de radio 1
-    var forma = curvas_bezier([[0.0,1.0],[c,1.0],[1.0,c],[1.0,0.0],[1.0,0.0],[1.0,-c],[c,-1.0],[0.0,-1.0],[0.0,-1.0],[-c,-1.0],[-1.0,-c],[-1.0,0.0],[-1.0,0.0],[-1.0,c],[-c,1.0],[0.0,1.0]],100);
+    var puntos = curvas_bezier([[0.0,1.0],[c,1.0],[1.0,c],[1.0,0.0],[1.0,0.0],[1.0,-c],[c,-1.0],[0.0,-1.0],[0.0,-1.0],[-c,-1.0],[-1.0,-c],[-1.0,0.0],[-1.0,0.0],[-1.0,c],[-c,1.0],[0.0,1.0]],100);
+    var forma = puntos[0];
+    var normal = puntos[1];
+    normal.push(normal[0]);
     forma.push(forma[0]);
     var m1 = mat4.create();
     mat4.translate(m1,m1,[0.0,-0.05,0.1]);
@@ -220,7 +234,7 @@ function crear_tren_base(){
             0,0,0,0,
             0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m3,m4,m5,m6,m7,m8,m8,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
-    var buffers=generarSuperficie(forma,recorrido);
+    var buffers=generarSuperficie(forma,recorrido,normal);
     var base = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     base.agregarUniformBool("isCabina",false);
     base.agregarUniformBool("usarReflexion",false);
@@ -230,7 +244,7 @@ function crear_tren_base(){
 
 function crear_rotor_aro(){
     var c = 0.551915024494; //Valor optimo para un circulo de radio 1
-    var recorrido_puntos = curvas_bezier([[0.0,1.0],[c,1.0],[1.0,c],[1.0,0.0],[1.0,0.0],[1.0,-c],[c,-1.0],[0.0,-1.0],[0.0,-1.0],[-c,-1.0],[-1.0,-c],[-1.0,0.0],[-1.0,0.0],[-1.0,c],[-c,1.0],[0.0,1.0]],100);
+    var recorrido_puntos = curvas_bezier([[0.0,1.0],[c,1.0],[1.0,c],[1.0,0.0],[1.0,0.0],[1.0,-c],[c,-1.0],[0.0,-1.0],[0.0,-1.0],[-c,-1.0],[-1.0,-c],[-1.0,0.0],[-1.0,0.0],[-1.0,c],[-c,1.0],[0.0,1.0]],100)[0];
     var recorrido = [[],[]];
     for (var i = 0; i < recorrido_puntos.length;i++){
         var m = mat4.create();
@@ -245,9 +259,12 @@ function crear_rotor_aro(){
     mat4.translate(m,m,[0.0,recorrido_puntos[0][0],recorrido_puntos[0][1]]);
     recorrido[0].push(m);
     recorrido[1].push(mat4.create());
-    var forma = curvas_bezier([[-0.1,-0.1],[-0.25,-0.05],[-0.25,0.05],[-0.1,0.1],[-0.1,0.1],[-0.05,0.1],[0.05,0.1],[0.1,0.1],[0.1,0.1],[0.25,0.05],[0.25,-0.05],[0.1,-0.1],[0.1,-0.1],[0.05,-0.1],[-0.05,-0.1],[-0.1,-0.1]],10);
+    var puntos = curvas_bezier([[-0.1,-0.1],[-0.25,-0.05],[-0.25,0.05],[-0.1,0.1],[-0.1,0.1],[-0.05,0.1],[0.05,0.1],[0.1,0.1],[0.1,0.1],[0.25,0.05],[0.25,-0.05],[0.1,-0.1],[0.1,-0.1],[0.05,-0.1],[-0.05,-0.1],[-0.1,-0.1]],10);
+    var forma = puntos[0];
+    var normal = puntos[1];
     forma.push(forma[0]);
-    var buffers=generarSuperficie(forma,recorrido);
+    normal.push(normal[0]);
+    var buffers=generarSuperficie(forma,recorrido,normal);
     var aro = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     aro.agregarUniformBool("isCabina",false);
     aro.agregarUniformBool("usarReflexion",true);
@@ -269,7 +286,10 @@ function crear_rotor_union(){
     var m_tapa_2 = mat4.fromValues(0.0,0,0,0,0.0,0,0,0,0,0,1.0,0.0,0,0,0,1.0);
     mat4.translate(m_tapa_2,m_tapa_2,[0.0,0.0,1.0]);
     mat4.scale(m_tapa_2,m_tapa_2,[0.5,0.5,1.0]);
-    var forma = curvas_bezier([[-0.1,-0.1],[-0.25,-0.05],[-0.25,0.05],[-0.1,0.1],[-0.1,0.1],[-0.05,0.15],[0.05,0.15],[0.1,0.1],[0.1,0.1],[0.25,0.05],[0.25,-0.05],[0.1,-0.1],[0.1,-0.1],[0.05,-0.15],[-0.05,-0.15],[-0.1,-0.1]],100);
+    var puntos = curvas_bezier([[-0.1,-0.1],[-0.25,-0.05],[-0.25,0.05],[-0.1,0.1],[-0.1,0.1],[-0.05,0.15],[0.05,0.15],[0.1,0.1],[0.1,0.1],[0.25,0.05],[0.25,-0.05],[0.1,-0.1],[0.1,-0.1],[0.05,-0.15],[-0.05,-0.15],[-0.1,-0.1]],100);
+    var forma = puntos[0];
+    var normal = puntos[1];
+    normal.push(normal[0]);
     forma.push(forma[0]);
     var m_tapa_1_norm = mat4.fromValues( 0,0,0,0
         ,0,0,0,0
@@ -280,7 +300,7 @@ function crear_rotor_union(){
             0,0,0,0,
             0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
-    var buffers=generarSuperficie(forma,recorrido);
+    var buffers=generarSuperficie(forma,recorrido,normal);
     var union = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     union.agregarUniformBool("isCabina",false);
     union.agregarUniformBool("usarReflexion",false);
@@ -289,7 +309,9 @@ function crear_rotor_union(){
 }
 
 function crear_eje(){
-    var forma = [[-0.01,-0.01],[-0.01,0.01],[0.01,0.01],[0.01,-0.01],[-0.01,-0.01]];
+    var puntos = [[-0.01,-0.01],[-0.01,0.01],[0.01,0.01],[0.01,-0.01],[-0.01,-0.01]];
+    var forma = puntos[0];
+    var normal = puntos[1];
     var m1 = mat4.create();
     var m2 = mat4.create();
     mat4.translate(m2,m2,[0.0,0.0,0.1]);
@@ -305,7 +327,7 @@ function crear_eje(){
             0,0,0,0,
             0,0,1,1);
     recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
-    var buffers=generarSuperficie(forma,recorrido);
+    var buffers=generarSuperficie(forma,recorrido,normal);
     return new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
 }
 
@@ -496,7 +518,7 @@ function crear_terreno(latitudeBands,longitudeBands,lado){
     var cielo = crear_cielo(latitudeBands,longitudeBands,lado / 2);
     terreno.agregarHijo(agua);
     terreno.agregarHijo(cielo);
-    agua.mover([0.0,3.25,0.0]);
+    agua.mover([0.0,5.5,0.0]);
     return terreno;
 }
 
@@ -545,6 +567,7 @@ function crear_terreno(latitud,longitud,lado){
 }*/
 function crear_plataforma(){
     var forma = [[-0.5,-0.5],[0.5,-0.5],[0.5,0.5],[-0.5,0.5],[-0.5,-0.5]];
+    var normal = [[0.0,-1.0],[1.0,0.0],[0.0,1.0],[-1.0,0.0],[-1.0,0.0]];
     var m1 = mat4.create();
     var m2 = mat4.create();
     mat4.translate(m2,m2,[0.0,0.0,0.1]);
@@ -560,7 +583,7 @@ function crear_plataforma(){
             0,0,0,0,
             0,0,1,1);
     var recorrido = [[m_tapa_1,m1,m1,m2,m2,m_tapa_2],[m_tapa_1_norm,m_tapa_1_norm,mat4.create(),mat4.create(),m_tapa_2_norm,m_tapa_2_norm]];
-    var buffers=generarSuperficie(forma,recorrido);
+    var buffers=generarSuperficie(forma,recorrido,normal);
     var plataforma = new Objeto3D(buffers.webgl_position_buffer,buffers.webgl_index_buffer,buffers.webgl_normal_buffer);
     plataforma.set_texture_buffer(buffers.webgl_uvs_buffer);
     plataforma.initTexture("texturas/helipad.jpg","cabinaTex");

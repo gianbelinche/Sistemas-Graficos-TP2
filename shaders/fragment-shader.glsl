@@ -19,11 +19,12 @@ uniform bool usarReflexion;
 void main(void) {
     float pi = 3.1415;
     vec3 lightDirection= normalize(uLightPosition - vPosWorld);
-    vec3 color = vColor;
-    color += uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
+    //vec3 color = vColor;
+    //color += uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.15;
+    vec3 color = normalize(vNormal);
     if (usarTextura){
         vec3 cabina=texture2D(cabinaTex,vUv).xyz;
-        color += cabina;
+        //color += cabina;
     }
     if (isCabina){
         vec3 cabina_reflectiva = texture2D(cabinaReflectivaTex,vUv).xyz;
@@ -42,7 +43,7 @@ void main(void) {
             float beta = acos(direction.z/r);
             //vec3 cabina_reflexion = texture2D(cabinaReflexionTex,vec2(((pi/2.0)-beta)/pi,alfa/(2.0*pi))).xyz;
             vec3 cabina_reflexion = texture2D(cabinaReflexionTex,direction.xy / m + .5).xyz;
-            color += cabina_reflexion;
+            //color += cabina_reflexion;
         }
     }
     if (usarReflexion){

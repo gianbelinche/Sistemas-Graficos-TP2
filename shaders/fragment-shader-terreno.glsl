@@ -265,11 +265,12 @@ void main(void) {
         vec3 zona = mix(zona_baja_media,zona_alta,limite_zonas_altas);
         
         vec3 lightDirection2= normalize(uLightPosition2);
-        color+=zona;
-        color+=uDirectionalColor2*max(dot(normalize(vNormal),lightDirection2), 0.0) *0.15;
+        color+=zona * 0.7;
+        //color += normalize(vNormal);
+        //color+=uDirectionalColor2*max(dot(normalize(vNormal),lightDirection2), 0.0) *0.15;
 
-        vec3 lightDirection= normalize(uLightPosition - vWorldPosition.xyz);
-        color+=uDirectionalColor*gauss(dot(normalize(vNormal),lightDirection)) *0.05;
+        vec3 lightDirection= normalize(uLightPosition);
+        color+=uDirectionalColor * max(dot(normalize(vNormal),-lightDirection),0.0) *0.3;
     }
     if (!isTitle){
         #define LOG2 1.442695
