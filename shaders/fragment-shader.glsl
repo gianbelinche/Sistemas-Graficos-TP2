@@ -21,14 +21,12 @@ void main(void) {
     vec3 lightDirection= normalize(uLightPosition);
     vec3 color = vColor * 0.6;
     color += uDirectionalColor*max(dot(normalize(vNormal),lightDirection), 0.0) *0.25;
-
     vec3 lightDirectionSpecular =  normalize(uLightPosition);
     vec3 view = normalize(viewDir - vPosWorld.xyz);
     vec3 reflectDir = reflect(-lightDirectionSpecular, normalize(vNormal));
     float spec = pow(max(dot(view, reflectDir), 0.0), 32.0);
     vec3 specular = 0.5 * spec * uDirectionalColor;
     color += specular;
-    //vec3 color = normalize(vNormal);
     if (usarTextura){
         vec3 cabina=texture2D(cabinaTex,vUv).xyz;
         color += cabina * 0.6;
